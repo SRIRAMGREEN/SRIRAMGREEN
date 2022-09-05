@@ -1,0 +1,43 @@
+server:
+  port: 8011
+  context-path: /timesheet
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/TimeSheetProject
+    username: postgres
+    password: root
+    driverClassName: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update # When you launch the application for the first time - switch "none" at "create"
+    show-sql: true
+    format_sql: true
+    database: postgresql
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    open-in-view: false
+    generate-ddl: true
+  #      naming:
+  #        implicit-strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyLegacyJpaImpl
+  #        physical-strategy: org.hibernate.boot.model.naming. PhysicalNamingStrategyStandardImpl
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: timesheet027@gmail.com
+    password: gsmeastctdspyesu
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+#timesheet:
+#   baseURL: https://localhost:3000/api/v1/registration/verify
+#   from:
+#     email: timesheet027@gmail.com
+swagger-ui:
+  path: /timesheet-swagger-ui.html
+  api-docs:
+    path: /v3/timesheet-api-docs
