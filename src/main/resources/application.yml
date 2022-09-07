@@ -1,6 +1,7 @@
 server:
-  port: 8011
-  context-path: /timesheet
+  port: 8012
+#  servlet:
+#    context-path: /timesheet
 spring:
   datasource:
     url: jdbc:postgresql://localhost:5432/TimeSheetProject
@@ -37,7 +38,7 @@ spring:
 #   baseURL: https://localhost:3000/api/v1/registration/verify
 #   from:
 #     email: timesheet027@gmail.com
-swagger-ui:
-  path: /timesheet-swagger-ui.html
-  api-docs:
-    path: /v3/timesheet-api-docs
+#  swagger-ui:
+#    path: /timesheet-swagger-ui.html
+#    api-docs:
+#      path: /v1/timesheet-api-docs

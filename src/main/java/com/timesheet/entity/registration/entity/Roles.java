@@ -1,4 +1,4 @@
-package com.timesheet.entity.registration;
+package com.timesheet.entity.registration.entity;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -14,7 +14,7 @@ public class Roles {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(unique = true, name = "roles_id")
-    private Long rolesId;
+    private int rolesId;
 
     @Column(name = "roleDescription")
     private String roleDescription;

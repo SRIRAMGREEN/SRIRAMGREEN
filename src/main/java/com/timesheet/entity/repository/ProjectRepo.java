@@ -9,6 +9,10 @@ import java.util.Optional;
 
 @Repository
 public interface ProjectRepo extends JpaRepository<Project,Integer> {
+//    Optional <Project> findById(int projectId);
 
-    Optional<List<Project>> findByProjectId(int id);
+
+    Optional<Project> findByProjectId(int projectId);
+
+//    Integer deleteById(int projectId);
 }

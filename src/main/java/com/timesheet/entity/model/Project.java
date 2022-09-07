@@ -3,6 +3,7 @@ package com.timesheet.entity.model;
 
 import com.timesheet.entity.utils.DateTime;
 import lombok.*;
+import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
 
@@ -28,4 +29,6 @@ public class Project extends DateTime  {
     @Column(name = "project_manager")
     public String projectManager;
 
+    @Lob
+    private byte[] image;
 }

@@ -1,15 +1,12 @@
-package com.timesheet.entity.registration.repo;
+package com.timesheet.entity.repository;
 
-import com.timesheet.entity.registration.entity.User;
+import com.timesheet.entity.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
 public interface UserRepo extends JpaRepository<User, Integer> {
-    User findByEmail(String email);
 
-    Integer findById(int id);
-    User findByVerificationCode(String code);
 
     User findByLoginIdAndPassword(String loginId, String password);
 }

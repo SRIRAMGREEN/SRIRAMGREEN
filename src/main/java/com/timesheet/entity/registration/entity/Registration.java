@@ -1,23 +1,22 @@
 package com.timesheet.entity.registration.entity;
 
-import com.timesheet.entity.model.Project;
-import com.timesheet.entity.model.TimeSheet;
-import com.timesheet.entity.utils.DateTime;
-import lombok.*;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.*;
-import java.util.List;
-
 
 
 @Entity
-@Table(name = "users")
+@Table(name = "Registration")
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class User extends DateTime {
-
+public class Registration {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     public int id;
@@ -28,7 +27,7 @@ public class User extends DateTime {
     @Column(nullable = false, unique = true, name = "email")
     public String email;
 
-    @Column(nullable = false, name = "loginId"  )
+    @Column(nullable = false, name = "loginId")
     public String loginId;
 
     @Column(name = "password")
@@ -40,12 +39,11 @@ public class User extends DateTime {
     @Column(name = "verification_code", updatable = false)
     public String verificationCode;
 
-    @ManyToMany(targetEntity = Project.class)
-    @JoinColumn(name = "project_id")
-    public List<Project> project;
-
-    @OneToOne
-    @JoinColumn(name = "timesheet_id")
-    private TimeSheet timeSheet;
+    @ManyToOne(fetch = FetchType.LAZY,cascade = CascadeType.DETACH)
+    @JsonIgnoreProperties("roles")
+    @JoinColumn(name = "role_id", referencedColumnName = "roles_id", updatable = false)
+    private Roles roles;
 
 }
+
+

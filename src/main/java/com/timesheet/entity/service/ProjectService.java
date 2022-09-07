@@ -1,16 +1,20 @@
 package com.timesheet.entity.service;
 
+import com.timesheet.entity.model.dto.ProjectDto;
 import com.timesheet.entity.model.Project;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.util.List;
+import java.util.Optional;
 
 public interface ProjectService {
 
-    List<Project> insertProject(List<Project> project);
+    ProjectDto insertProject(Project project);
 
-    List<Project> getProjectDetails(int id);
+    ProjectDto getProjectDetails(int projectId);
 
-    Project updateProject(Project project);
+    ProjectDto updateProject(Project project);
 
-    String deleteProject(int id);
+    String deleteProject(int projectId);
+
+    Boolean insertImage(Optional<MultipartFile> image, int projectId);
 }

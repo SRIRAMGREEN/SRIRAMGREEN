@@ -1,10 +1,9 @@
 package com.timesheet.entity.registration.controller;
 
-import com.timesheet.entity.registration.entity.User;
-import com.timesheet.entity.registration.repo.UserRepo;
-import com.timesheet.entity.registration.service.UserRegistrationService;
-import com.timesheet.entity.registration.serviceimpl.UserRegistrationServiceImpl;
-import lombok.AllArgsConstructor;
+import com.timesheet.entity.registration.entity.dto.RegistrationDto;
+import com.timesheet.entity.registration.entity.Registration;
+import com.timesheet.entity.registration.service.RegistrationService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,29 +16,26 @@ import java.io.UnsupportedEncodingException;
 @RestController
 @CrossOrigin(origins = "http://localhost:3000")
 @RequestMapping(path = "api/v1/registration")
-@AllArgsConstructor
 public class RegistrationController {
 
     @Autowired
-    UserRegistrationServiceImpl userRegistrationService;
-
-    @Autowired
-    private UserRepo userRepo;
+    private RegistrationService registrationService;
 
     @PostMapping("/createAccount")
-    public User register(@RequestBody User user, HttpServletRequest request) throws MessagingException, UnsupportedEncodingException {
-        userRegistrationService.signUpUser(user, getSiteURL(request));
-        return user;
+    public RegistrationDto insertDetails(@RequestBody Registration registration, HttpServletRequest request) throws MessagingException, UnsupportedEncodingException {
+        return registrationService.insertDetails(registration, getSiteURL(request));
+
     }
-    private String getSiteURL(HttpServletRequest request){
+
+    private String getSiteURL(HttpServletRequest request) {
         String siteURL = request.getRequestURL().toString();
-        return siteURL.replace(request.getServletPath(),"http://localhost:3000/verify");
+        return siteURL.replace(request.getServletPath(), "http://localhost:3000/verify");
     }
 
     @PutMapping("/verify")
-    public ResponseEntity<?> verifyCandidate(@RequestBody User user1) {
-        if (!user1.getVerificationCode().isEmpty()) {
-            return ResponseEntity.ok(userRegistrationService.verifyUser(user1));
+    public ResponseEntity<?> verifyUser(@RequestBody Registration registration) {
+        if (!registration.getVerificationCode().isEmpty()) {
+            return ResponseEntity.ok(registrationService.verifyUser(registration));
 //                    return "/createPassword";
         }
         return (ResponseEntity<?>) ResponseEntity.notFound();
@@ -47,29 +43,27 @@ public class RegistrationController {
     }
 
     @PostMapping("/login")
-    public User loginUser(@RequestBody User user) throws Exception {
-        String tempLoginId = user.getLoginId();
-        String tempPass = user.getPassword();
-        User userObj = null;
-        if(tempLoginId != null && tempPass != null){
-            userObj = userRegistrationService.login(tempLoginId,tempPass);
+    public RegistrationDto loginUser(@RequestBody Registration registration) throws Exception {
+        String tempLoginId = registration.getLoginId();
+        String tempPass = registration.getPassword();
+        RegistrationDto userObj = null;
+        if (tempLoginId != null && tempPass != null) {
+            userObj = registrationService.login(tempLoginId, tempPass);
         }
-        if(userObj == null){
+        if (userObj == null) {
             throw new Exception("invalid credentials");
         }
         return userObj;
     }
 
     @PostMapping("/logout")
-    public String logout(HttpServletRequest request, HttpServletResponse response)
-    {
-
+    public String logout(HttpServletRequest request, HttpServletResponse response) {
         return "redirect:/login";
     }
 
     @PutMapping("/forgotPassword")
-    public User forgotPassword(@RequestBody User user) {
-        return userRegistrationService.setPassword(user);
+    public RegistrationDto forgotPassword(@RequestBody Registration registration) {
+        return registrationService.setPassword(registration);
         //        return "/login";
 
     }
