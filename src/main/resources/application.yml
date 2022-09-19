@@ -4,7 +4,7 @@ server:
 #    context-path: /timesheet
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/TimeSheetProject
+    url: jdbc:postgresql://localhost:5432/timesheetproject
     username: postgres
     password: root
     driverClassName: org.postgresql.Driver
@@ -17,11 +17,9 @@ spring:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     open-in-view: false
     generate-ddl: true
-  #      naming:
-  #        implicit-strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyLegacyJpaImpl
-  #        physical-strategy: org.hibernate.boot.model.naming. PhysicalNamingStrategyStandardImpl
+
   mvc:
-    pathmatch:
+    path match:
       matching-strategy: ant_path_matcher
   mail:
     host: smtp.gmail.com
@@ -34,11 +32,23 @@ spring:
           auth: true
           starttls:
             enable: true
-#timesheet:
-#   baseURL: https://localhost:3000/api/v1/registration/verify
-#   from:
-#     email: timesheet027@gmail.com
+  thymeleaf:
+    enabled: true
+    prefix:classpath: /resources/
+    suffix: .html
+Timesheet:
+  baseURL: http://timesheet.com/activation
+  baseURLEmployees: http://timesheet.com/activation/Employees
+  baseURLForgotPassword: http://timesheet.com/forgot-password
+  from:
+    email: timesheet027@gmail.com
+#spring-doc:
+#  group-configs:
+#    - group: com.timesheet
+#      packagesToScan:
+#        - "com.timesheet.module"
 #  swagger-ui:
 #    path: /timesheet-swagger-ui.html
-#    api-docs:
-#      path: /v1/timesheet-api-docs
+#  api-docs:
+#    path: /v3/timesheet-api-docs
+

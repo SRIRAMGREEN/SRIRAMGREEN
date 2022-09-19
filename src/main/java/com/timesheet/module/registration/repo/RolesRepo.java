@@ -1,0 +1,9 @@
+package com.timesheet.module.registration.repo;
+
+import com.timesheet.module.registration.entity.Roles;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+@Repository
+public interface RolesRepo extends JpaRepository<Roles,Integer> {
+}
