@@ -52,7 +52,6 @@ public class TaskServiceImpl implements TaskService {
             List<Task> taskList = taskRepo.findByProjectProjectId(projectId).get();
             if (!taskList.isEmpty()) {
                 return taskList.stream().map(task -> {
-//                    modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.LOOSE);
                     return modelMapper.map(task, TaskDto.class);
                 }).collect(Collectors.toList());
             } else {
