@@ -8,15 +8,15 @@ import lombok.Setter;
 @Setter
 public class ProjectManagerDto2 {
 
-    public int id;
+    private int id;
 
-    public String projectManagerName;
+    private String projectManagerName;
 
-    public String emailId;
+    private String emailId;
 
-    public String loginId;
+    private String loginId;
 
-    public String department;
+    private String department;
 
 
 }

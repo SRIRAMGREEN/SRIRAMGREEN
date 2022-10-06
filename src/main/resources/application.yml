@@ -37,18 +37,14 @@ spring:
     prefix:classpath: /resources/
     suffix: .html
 Timesheet:
-  baseURL: http://timesheet.com/activation
-  baseURLEmployees: http://timesheet.com/activation/Employees
-  baseURLForgotPassword: http://timesheet.com/forgot-password
+  baseURL: http://localhost:3000/activation
+  baseURLEmployees: http://localhost:3000/activation/Employees
+  baseURLForgotPassword: http://localhost:3000/forgot-password
+  taskURL: http://localhost:3000/timesheetscreen
+  timesheetURL: http://localhost:3000/ifapproved/dashboard
   from:
     email: timesheet027@gmail.com
-#spring-doc:
-#  group-configs:
-#    - group: com.timesheet
-#      packagesToScan:
-#        - "com.timesheet.module"
-#  swagger-ui:
-#    path: /timesheet-swagger-ui.html
-#  api-docs:
-#    path: /v3/timesheet-api-docs
+
+  liquebase:
+    enable: true
 

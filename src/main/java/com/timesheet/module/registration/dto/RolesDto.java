@@ -1,4 +1,4 @@
-package com.timesheet.module.registration.entity.dto;
+package com.timesheet.module.registration.dto;
 
 import lombok.Getter;
 import lombok.Setter;

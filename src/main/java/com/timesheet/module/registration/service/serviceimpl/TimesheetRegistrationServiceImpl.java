@@ -4,10 +4,11 @@ import com.timesheet.module.Employee.repository.EmployeeRepo;
 import com.timesheet.module.Employee.service.EmployeeService;
 import com.timesheet.module.projectmanager.repository.ProjectManagerRepo;
 import com.timesheet.module.projectmanager.service.ProjectManagerService;
+import com.timesheet.module.registration.dto.RegistrationDto;
 import com.timesheet.module.registration.entity.AccountVerificationEmailContext;
 import com.timesheet.module.registration.entity.ForgotPasswordToken;
 import com.timesheet.module.registration.entity.Registration;
-import com.timesheet.module.registration.entity.dto.ChangePasswordDto;
+import com.timesheet.module.registration.dto.ChangePasswordDto;
 import com.timesheet.module.registration.repo.RegistrationRepo;
 import com.timesheet.module.registration.service.ForgotPasswordService;
 import com.timesheet.module.registration.service.TimesheetEmailService;
@@ -23,6 +24,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -49,6 +51,7 @@ public class TimesheetRegistrationServiceImpl implements TimesheetRegistrationSe
 
     @Autowired
     ProjectManagerRepo projectManagerRepo;
+
     @Autowired
     EmployeeRepo employeeRepo;
     @Autowired
@@ -69,7 +72,7 @@ public class TimesheetRegistrationServiceImpl implements TimesheetRegistrationSe
 
     @Override
     public Registration getLoginDetails(Registration registration) {
-        Optional<Registration> savedRegistration = Optional.ofNullable(registrationRepository.findByLoginId(registration.getLoginId()));
+        Optional<Registration> savedRegistration = Optional.ofNullable(registrationRepository.findByLoginId(registration.getLoginId()).get());
         if (savedRegistration.isPresent()) {
             log.debug("savedRegistration>>>" + savedRegistration);
             if (!ObjectUtils.isEmpty(registration)) {
@@ -89,7 +92,7 @@ public class TimesheetRegistrationServiceImpl implements TimesheetRegistrationSe
 
     @Transactional
     @Override
-    public Boolean insertDetails(Registration registration) {
+    public Registration  insertDetails(Registration registration) {
         Registration existingUser = registrationRepository.findByEmailId(registration.getEmailId());
         Pattern emailPattern = Pattern.compile(EMAIL_REGEX);
         Matcher emailMatcher = null;
@@ -116,7 +119,7 @@ public class TimesheetRegistrationServiceImpl implements TimesheetRegistrationSe
                     if (Objects.nonNull(registration1)) {
                         try {
                             createProjectManagerAndEmployee(registration1);
-                            return true;
+                            return registration;
                         } catch (Exception e) {
                             throw new ServiceException(DATA_NOT_SAVED.getErrorCode(), "Invalid Data");
                         }
@@ -127,7 +130,7 @@ public class TimesheetRegistrationServiceImpl implements TimesheetRegistrationSe
                         Registration savedRegistration = registrationRepository.save(registration);
                         try {
                             createProjectManagerAndEmployee(savedRegistration);
-                            return true;
+                            return registration;
                         } catch (Exception e) {
                             throw new ServiceException(DATA_NOT_SAVED.getErrorCode(), "Invalid Data");
                         }
@@ -140,7 +143,7 @@ public class TimesheetRegistrationServiceImpl implements TimesheetRegistrationSe
                 if (Objects.nonNull(registration1)) {
                     try {
                         createProjectManagerAndEmployee(registration1);
-                        return true;
+                        return registration;
                     } catch (Exception e) {
                         throw new ServiceException(DATA_NOT_SAVED.getErrorCode(), "Invalid Data");
 
@@ -152,7 +155,7 @@ public class TimesheetRegistrationServiceImpl implements TimesheetRegistrationSe
                     try {
                         Registration savedRegistration = registrationRepository.save(registration);
                         createProjectManagerAndEmployee(savedRegistration);
-                        return true;
+                        return registration;
                     } catch (Exception e) {
                         throw new ServiceException(DATA_NOT_SAVED.getErrorCode(), "Invalid Data");
                     }
@@ -160,7 +163,7 @@ public class TimesheetRegistrationServiceImpl implements TimesheetRegistrationSe
                 }
             }
         } else {
-            return true;
+            return registration;
         }
     }
 
@@ -179,7 +182,8 @@ public class TimesheetRegistrationServiceImpl implements TimesheetRegistrationSe
                 verificationToken.setExpired(true);
                 logger.info("RegistrationServiceImpl || verifyRegistration|| verification has been expired");
                 verificationTokenRepository.save(verificationToken);
-                registration1.setPassword(EncryptorDecryptor.encrypt(registration.getPassword()));
+                BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+                registration1.setPassword(encoder.encode(registration.getPassword()));
                 logger.info("RegistrationServiceImpl || verifyRegistration|| Account has been verified");
                 return registrationRepository.saveAndFlush(registration1);
             }
@@ -188,7 +192,7 @@ public class TimesheetRegistrationServiceImpl implements TimesheetRegistrationSe
         }
     }
 
-    private Registration sendRegistrationConfirmationEmail(Registration registration) {
+    public Registration sendRegistrationConfirmationEmail(Registration registration) {
         VerificationToken verificationToken = verificationService.createVerificationToken();
         registration.setToken(verificationToken.getToken());
         try {
@@ -252,10 +256,10 @@ public class TimesheetRegistrationServiceImpl implements TimesheetRegistrationSe
 
     private void createProjectManagerAndEmployee(Registration registration) {
         if (registration.getRoles().getRolesId() == 1) {
-            //create a ProjectManger entry
+            //create an ProjectManger entry
             projectManagerService.addEntryToProjectManager(registration);
         } else if (registration.getRoles().getRolesId() == 2) {
-            //create a Employee entry
+            //create an Employee entry
             employeeService.addEntryToEmployee(registration);
         }
 
@@ -325,19 +329,3 @@ public class TimesheetRegistrationServiceImpl implements TimesheetRegistrationSe
         }
     }
 }
-//    @Override
-//    public void sendMailForFailedEmployeesRegistration(Map<Integer, List<String>> failedMap) {
-//        failedMap.entrySet().forEach(failedEntry -> {
-//            Optional<Registration> registration = registrationRepository.findById(failedEntry.getKey());
-//            if (registration.isPresent()) {
-//                AccountVerificationEmailContext emailContext = new AccountVerificationEmailContext();
-//                emailContext.failForEmployees(registration.get(), emailContext, failedEntry.getValue());
-//                try {
-//                    emailService.sendFailedMail(emailContext);
-//                } catch (Exception e) {
-//                    logger.error("RegistrationServiceImpl || sendMailForFailedEmployeeRegistrations || Unable to send email for mail id: {}", registration.get().getEmailId());
-//                }
-//            }
-//        });
-//    }
-//}

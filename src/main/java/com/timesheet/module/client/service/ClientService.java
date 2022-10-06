@@ -1,7 +1,7 @@
 package com.timesheet.module.client.service;
 
 import com.timesheet.module.client.entity.Client;
-import com.timesheet.module.client.entity.dto.ClientDto;
+import com.timesheet.module.client.dto.ClientDto;
 
 import java.util.List;
 

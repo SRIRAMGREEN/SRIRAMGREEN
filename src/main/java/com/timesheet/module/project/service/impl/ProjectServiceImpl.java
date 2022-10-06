@@ -16,9 +16,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import static com.timesheet.module.utils.TimeSheetErrorCodes.*;
 import static com.timesheet.module.utils.TimesheetConstants.IMAGE_REGEX;
@@ -38,26 +38,31 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Override
     public ProjectDto insertProject(Project project) {
+        logger.info("ProjectServiceImpl || insertProject ||Adding the project Details");
         try {
-            logger.info("ProjectServiceImpl || insertData || Inserting the Project list: {}", project);
             Project project1 = projectRepo.save(project);
             modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.LOOSE);
-            ProjectDto projectDto = modelMapper.map(project1, ProjectDto.class);
-            return projectDto;
+            return modelMapper.map(project1, ProjectDto.class);
+        } catch (NullPointerException e) {
+            throw new ServiceException(INVALID_REQUEST.getErrorCode(), "Invalid request");
         } catch (Exception e) {
-            throw new ServiceException(DATA_NOT_SAVED.getErrorCode());
+            throw new ServiceException(DATA_NOT_SAVED.getErrorCode(), "Invalid data");
         }
     }
 
+    @Transactional
     @Override
     public List<ProjectDto> getProjectDetailsByClientId(int clientId) {
         try {
-            List<Project> projects = projectRepo.findByClientId(clientId).get();
-            if (!projects.isEmpty()) {
-                modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.LOOSE);
-                return projects.stream().map(project -> {
-                    return modelMapper.map(project, ProjectDto.class);
-                }).collect(Collectors.toList());
+            Optional<List<Project>> projects = projectRepo.findProjectByClientId(clientId);
+            List<ProjectDto> projectDtoList = new ArrayList<>();
+            if (projects.isPresent()) {
+                for (Project project : projects.get()) {
+                    modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.LOOSE);
+                    ProjectDto projectDto = modelMapper.map(project, ProjectDto.class);
+                    projectDtoList.add(projectDto);
+                }
+                return projectDtoList;
             } else {
                 throw new NullPointerException();
             }
@@ -65,6 +70,32 @@ public class ProjectServiceImpl implements ProjectService {
             throw new ServiceException(DATA_NOT_FOUND.getErrorCode(), "Invalid req/Id not found");
         } catch (Exception e) {
             throw new ServiceException(INVALID_REQUEST.getErrorCode(), "Invalid req");
+        }
+
+    }
+
+    @Override
+    public List<ProjectDto> getAllProjectDetails() {
+        logger.info("ProjectServiceImpl || getAllProjectDetails || Get all project manager from the ProjectDetails");
+        try {
+            Optional<List<Project>> project = Optional.of(projectRepo.findAll());
+            List<ProjectDto> projectDtoList = new ArrayList<>();
+            if (!project.get().isEmpty()) {
+                for (Project project1 : project.get()) {
+                    modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.LOOSE);
+                    ProjectDto projectDto = modelMapper.map(project1, ProjectDto.class);
+                    projectDtoList.add(projectDto);
+                }
+                return projectDtoList;
+            } else {
+                throw new ServiceException(DATA_NOT_FOUND.getErrorCode());
+            }
+        } catch (NullPointerException e) {
+            throw new ServiceException(INVALID_REQUEST.getErrorCode(), "Invalid request");
+        } catch (ServiceException e) {
+            throw new ServiceException(DATA_NOT_FOUND.getErrorCode(), "No data");
+        } catch (Exception e) {
+            throw new ServiceException(EXPECTATION_FAILED.getErrorCode(), "data not retrieved");
         }
     }
 
@@ -92,23 +123,17 @@ public class ProjectServiceImpl implements ProjectService {
     @Override
     public String deleteProject(int projectId) {
         Optional<Project> project = projectRepo.findById(projectId);
-        if (project.isPresent()) {
-            logger.info("ProjectServiceImpl || deleteData || Deleting the project id: {}", projectId);
-            try {
-                projectRepo.deleteById(projectId);
-
-            } catch (NullPointerException e) {
-                throw new ServiceException(INVALID_REQUEST.getErrorCode(), "Invalid request");
-            } catch (Exception e) {
-                throw new ServiceException(DATA_NOT_FOUND.getErrorCode(), "Data Not Found");
-            }
+        try {
+            projectRepo.deleteById(projectId);
+        } catch (Exception e) {
+            throw new ServiceException(DATA_NOT_FOUND.getErrorCode(), "Invalid ID");
         }
-        return "deleted";
+        return " Project details deleted successfully";
     }
 
     @Transactional
     @Override
-    public Boolean insertImage(Optional<MultipartFile> image, int projectId) {
+    public String insertImage(Optional<MultipartFile> image, int projectId) {
         Optional<Project> project = projectRepo.findById(projectId);
         if (project.isPresent()) {
             try {
@@ -127,7 +152,7 @@ public class ProjectServiceImpl implements ProjectService {
         } else {
             throw new ServiceException(DATA_NOT_FOUND.getErrorCode(), "Invalid data");
         }
-        return true;
+        return "Project Image Inserted Successfully";
     }
 
 }

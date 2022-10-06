@@ -2,10 +2,8 @@ package com.timesheet.module.project.entity;
 
 import com.timesheet.module.client.entity.Client;
 import com.timesheet.module.task.entity.Task;
-import com.timesheet.module.utils.DateTime;
-import lombok.AllArgsConstructor;
+
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
@@ -16,22 +14,15 @@ import java.util.List;
 @Table(name = "Project")
 @Getter
 @Setter
-public class Project extends DateTime {
+public class Project  {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "project_id", unique = true)
     public int projectId;
 
-    @ManyToOne(fetch = FetchType.EAGER,cascade = CascadeType.DETACH)
-    @JoinColumn(name = "client_id",referencedColumnName = "client_id")
-    public Client client;
-
-    @Column(name = "project_name")
+    @Column(unique = true,name = "project_name")
     public String projectName;
-
-    @Column(name = "client_name")
-    public String clientName;
 
     @Column(name = "project_manager")
     public String projectManagerName;
@@ -45,9 +36,13 @@ public class Project extends DateTime {
     @Column
     public Date projectEndDate;
 
+    @ManyToOne(fetch = FetchType.EAGER,targetEntity = Client.class)
+    @JoinColumn(name = "client_id", referencedColumnName = "client_id")
+    public Client client;
+
+    @OneToMany(fetch = FetchType.LAZY, targetEntity = Task.class, mappedBy = "project")
+    public List<Task> task;
+
     @Lob
     private byte[] image;
-
-    @OneToMany(fetch = FetchType.LAZY ,targetEntity = Task.class,mappedBy = "project")
-    public List<Task> task;
 }

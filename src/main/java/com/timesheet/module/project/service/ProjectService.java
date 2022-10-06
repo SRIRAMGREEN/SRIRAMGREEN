@@ -12,10 +12,10 @@ public interface ProjectService {
     ProjectDto insertProject(Project project);
 
     List<ProjectDto> getProjectDetailsByClientId(int clientId);
-//    List<ProjectDto> getAllProjectDetails();
+    List<ProjectDto> getAllProjectDetails();
     ProjectDto updateProject(Project project);
 
     String deleteProject(int projectId);
 
-    Boolean insertImage(Optional<MultipartFile> image, int projectId);
+    String insertImage(Optional<MultipartFile> image, int projectId);
 }

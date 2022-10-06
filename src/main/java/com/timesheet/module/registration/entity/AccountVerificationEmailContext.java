@@ -1,7 +1,5 @@
 package com.timesheet.module.registration.entity;
 
-import com.timesheet.module.Employee.entity.Employee;
-import com.timesheet.module.projectmanager.entity.ProjectManager;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.List;

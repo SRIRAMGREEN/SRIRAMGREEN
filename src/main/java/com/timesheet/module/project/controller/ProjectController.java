@@ -17,9 +17,9 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-//@CrossOrigin(origins = "http://localhost:3000")
 @RequestMapping(value = "/project")
 public class ProjectController {
+
     @Autowired
     ProjectService projectService;
 
@@ -33,21 +33,25 @@ public class ProjectController {
 
     @GetMapping(value = "/getProjectDetailsByClientId")
     public ResponseEntity<List<ProjectDto>> getProjectDetails(@RequestParam int clientId) {
-        logger.info("ProjectController || getProjectDetails || getting the ProjectDetails ->");
+        logger.info("ProjectController || getProjectDetailsByClientId || getting the ProjectDetails by clientId {} ->",clientId);
         return new ResponseEntity<>(projectService.getProjectDetailsByClientId(clientId), HttpStatus.OK);
     }
-
+    @GetMapping(value = "/getAllProjectDetails")
+    public ResponseEntity<List<ProjectDto>> getAllProjectDetails() {
+        logger.info("ProjectController || getAllProjectDetails || Getting the ProjectDetails Details from the project");
+        return new ResponseEntity<>(projectService.getAllProjectDetails(), HttpStatus.OK);
+    }
     @PutMapping(value = "/updateProject")
-    public ResponseEntity<ProjectDto> updateProject(@RequestBody Project project) {
-        logger.info("ProjectController || updateProjectDetails || Updating the ProjectDetails Info {} //->", project);
-        return new ResponseEntity<>(projectService.updateProject(project), HttpStatus.OK);
+    public ResponseEntity<ProjectDto> updateProject(@RequestBody Project projects) {
+        logger.info("ProjectController || updateProjectDetails || Updating the ProjectDetails Info {} //->", projects);
+        return new ResponseEntity<>(projectService.updateProject(projects), HttpStatus.OK);
     }
 
-    @DeleteMapping(value = "/deleteData")
+    @DeleteMapping(value = "/deleteProjectData")
     public String deleteProject(@RequestParam int projectId) {
         logger.info("ProjectController || deleteProjectDetails || Deleting the ProjectDetails {} // ->", projectId);
         projectService.deleteProject(projectId);
-        return "Deleted Successfully";
+        return "Project Details Deleted Successfully";
     }
 
     @PutMapping(value = "/insertImage", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})

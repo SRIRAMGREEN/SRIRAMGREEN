@@ -1,12 +1,12 @@
 package com.timesheet.module.team.entity;
 
-import com.timesheet.module.task.entity.Task;
+import com.timesheet.module.Employee.entity.Employee;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Table(name = "team")
@@ -16,15 +16,15 @@ import javax.persistence.*;
 @NoArgsConstructor
 public class Team {
 
-        @Id
-        @GeneratedValue(strategy = GenerationType.IDENTITY)
-        @Column(name = "team_id", unique = true)
-        public int id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "team_id", unique = true)
+    public int id;
 
-        @Column(nullable = false, name = "teamName")
-        public String teamName;
+    @Column(nullable = false, name = "teamName")
+    public String teamName;
 
-        @ManyToOne(fetch = FetchType.EAGER,targetEntity = Task.class)
-        @JoinColumn(name = "task_id",referencedColumnName = "task_id")
-        public Task task;
+    @OneToMany(targetEntity = Employee.class,mappedBy = "team",fetch = FetchType.EAGER)
+    private List<Employee>  employees;
+
 }

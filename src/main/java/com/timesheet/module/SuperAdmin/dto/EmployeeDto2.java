@@ -1,23 +1,23 @@
 package com.timesheet.module.SuperAdmin.dto;
 
-import com.timesheet.module.utils.DateTime;
+
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
 
-public class EmployeeDto2 extends DateTime {
+public class EmployeeDto2  {
 
-    public int id;
+    private int id;
 
-    public String employeeName;
+    private String employeeName;
 
-    public String email;
+    private String email;
 
-    public String loginId;
+    private String loginId;
 
-    public String department;
+    private String department;
 
     private String status;
 

@@ -1,4 +1,4 @@
-package com.timesheet.module.verificationmail.repo;//package com.flexcub.resourceplanning.verificationmail.repository;
+package com.timesheet.module.verificationmail.repo;
 
 import com.timesheet.module.verificationmail.entity.VerificationToken;
 import org.springframework.data.jpa.repository.JpaRepository;

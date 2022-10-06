@@ -1,7 +1,7 @@
 package com.timesheet.module.client.service.impl;
 
 import com.timesheet.module.client.entity.Client;
-import com.timesheet.module.client.entity.dto.ClientDto;
+import com.timesheet.module.client.dto.ClientDto;
 import com.timesheet.module.client.repository.ClientRepo;
 import com.timesheet.module.client.service.ClientService;
 import com.timesheet.module.utils.NullPropertyName;
@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,8 +37,7 @@ public class ClientServiceImpl implements ClientService {
         try {
             clientRepo.save(client);
             modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.LOOSE);
-            ClientDto clientDto = modelMapper.map(client, ClientDto.class);
-            return clientDto;
+            return modelMapper.map(client, ClientDto.class);
         } catch (NullPointerException e) {
             throw new ServiceException(INVALID_REQUEST.getErrorCode(), "Invalid request");
         } catch (Exception e) {
@@ -64,13 +64,14 @@ public class ClientServiceImpl implements ClientService {
         }
     }
 
+
     @Override
     public List<ClientDto> getAllClientDetails() {
         logger.info("ClientServiceImpl || getAllClientDetails || Get all clients from the ClientEntity");
         try {
             Optional<List<Client>> clientList = Optional.ofNullable(clientRepo.findAll());
             List<ClientDto> clientDtoList = new ArrayList<>();
-            if (!clientList.get().isEmpty()) {
+            if (clientList.isPresent()) {
                 for (Client client : clientList.get()) {
                     ClientDto clientDto = modelMapper.map(client, ClientDto.class);
                     clientDtoList.add(clientDto);
@@ -111,10 +112,10 @@ public class ClientServiceImpl implements ClientService {
 
 
     @Override
-    public String deleteClient(int clientId) {
-        logger.info("ClientServiceImpl || deleteClient || Client detail was deleted by particular ClientId=={}", clientId);
+    public String deleteClient(int client_id) {
+        logger.info("ClientServiceImpl || deleteClient || Client detail was deleted by particular ClientId=={}", client_id);
         try {
-            clientRepo.deleteById(clientId);
+            clientRepo.deleteById(client_id);
         } catch (NullPointerException e) {
             throw new ServiceException(INVALID_REQUEST.getErrorCode(), "Invalid request");
         } catch (Exception e) {

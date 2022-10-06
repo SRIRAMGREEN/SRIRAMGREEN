@@ -1,8 +1,8 @@
 package com.timesheet.module.projectmanager.service.impl;
 
 import com.timesheet.module.SuperAdmin.dto.ProjectManagerDto2;
+import com.timesheet.module.projectmanager.dto.ProjectManagerDto;
 import com.timesheet.module.projectmanager.entity.ProjectManager;
-import com.timesheet.module.projectmanager.entity.dto.ProjectManagerDto;
 import com.timesheet.module.projectmanager.repository.ProjectManagerRepo;
 import com.timesheet.module.projectmanager.service.ProjectManagerService;
 import com.timesheet.module.registration.entity.Registration;
@@ -34,13 +34,14 @@ public class ProjectManagerServiceImpl implements ProjectManagerService {
 
     Logger logger = LoggerFactory.getLogger(ProjectManagerServiceImpl.class);
 
+
     @Override
     public ProjectManagerDto2 addProjectManager(ProjectManager projectManager) {
-        logger.info("UserServiceImpl || addUserDetails ||Adding the User Details");
+        logger.info("ProjectManagerServiceImpl || addUserDetails ||Adding the User Details");
         try {
             projectManagerRepo.save(projectManager);
-            modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.LOOSE);
             ProjectManagerDto2 projectManagerDto = modelMapper.map(projectManager, ProjectManagerDto2.class);
+            modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.LOOSE);
             return projectManagerDto;
         } catch (NullPointerException e) {
             throw new ServiceException(INVALID_REQUEST.getErrorCode(), "Invalid request");
@@ -55,9 +56,9 @@ public class ProjectManagerServiceImpl implements ProjectManagerService {
         try {
             Optional<ProjectManager> projectManager = projectManagerRepo.findById(projectManagerId);
             if (projectManager.isPresent()) {
-                logger.info("EmployeeServiceImpl || get-EmployeeData || Updating the Employee Info");
-                modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.LOOSE);
+                logger.info("ProjectManagerServiceImpl || get-EmployeeData || Updating the Employee Info");
                 ProjectManagerDto projectManagerDto = modelMapper.map(projectManager.get(), ProjectManagerDto.class);
+                modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.LOOSE);
                 return projectManagerDto;
             } else {
                 throw new NullPointerException();
@@ -78,6 +79,7 @@ public class ProjectManagerServiceImpl implements ProjectManagerService {
             if (!projectManagers.get().isEmpty()) {
                 for (ProjectManager projectManager : projectManagers.get()) {
                     ProjectManagerDto projectManagerDto = modelMapper.map(projectManager, ProjectManagerDto.class);
+                    modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.LOOSE);
                     projectManagerDtoList.add(projectManagerDto);
                 }
                 return projectManagerDtoList;
@@ -136,17 +138,8 @@ public class ProjectManagerServiceImpl implements ProjectManagerService {
     @Override
     public void addEntryToProjectManager(Registration registration) {
         ProjectManager projectManager = new ProjectManager();
-        registration.getRoles().getRolesId();
-        projectManager.setEmailId(registration.getEmailId());
+        projectManager.setId(registration.getId());
         projectManager.setProjectManagerName(registration.getEmployeeName());
-        projectManager.setLoginId(registration.getLoginId());
-        projectManager.setDepartment(registration.getDepartment());
-        if (null != registration.getEmailId()) {
-            projectManager.setEmailId(registration.getEmailId() + " " + registration.getEmployeeName());
-        } else {
-            projectManager.setEmailId(registration.getEmailId());
-        }
-        //copy details from reg to user
         projectManagerRepo.save(projectManager);
     }
 }

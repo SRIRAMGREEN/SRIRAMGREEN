@@ -1,7 +1,7 @@
 package com.timesheet.module.projectmanager.controller;
 
 import com.timesheet.module.projectmanager.entity.ProjectManager;
-import com.timesheet.module.projectmanager.entity.dto.ProjectManagerDto;
+import com.timesheet.module.projectmanager.dto.ProjectManagerDto;
 import com.timesheet.module.projectmanager.service.ProjectManagerService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,10 +42,10 @@ public class ProjectManagerController {
 
 
 
-    @DeleteMapping(value = "/deleteProjectManager")
+    @DeleteMapping(value = "/deleteProjectManagerData")
     public String deleteProjectManagerDetails(@RequestParam int projectManagerId) {
         logger.info("ProjectController || deleteProjectManagerDetails || Deleting the project manager Info {} ", projectManagerId);
         projectManagerService.deleteProjectManager(projectManagerId);
-        return "Project Deleted Successfully";
+        return "ProjectManager Details Deleted Successfully";
     }
 }

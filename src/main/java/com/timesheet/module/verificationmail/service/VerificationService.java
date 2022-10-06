@@ -1,4 +1,4 @@
-package com.timesheet.module.verificationmail.service;//package com.flexcub.resourceplanning.verificationmail.service;
+package com.timesheet.module.verificationmail.service;
 
 
 import com.timesheet.module.verificationmail.entity.VerificationToken;

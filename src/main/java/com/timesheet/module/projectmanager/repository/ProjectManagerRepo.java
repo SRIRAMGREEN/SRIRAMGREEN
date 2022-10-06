@@ -12,6 +12,5 @@ import java.util.Optional;
 public interface ProjectManagerRepo extends JpaRepository<ProjectManager,Integer> {
 
     Optional<List<ProjectManager>> findByProjectManagerAddedByAdminTrue();
-
-    ProjectManager findByEmailId(String emailId);
+    
 }

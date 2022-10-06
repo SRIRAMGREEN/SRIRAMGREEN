@@ -1,7 +1,10 @@
 package com.timesheet.module.Employee.entity;
 
-import com.timesheet.module.utils.DateTime;
-import lombok.*;
+import com.timesheet.module.team.entity.Team;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.*;
 
@@ -12,30 +15,21 @@ import javax.persistence.*;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class Employee extends DateTime {
+public class Employee {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "employee_id",nullable = false, unique = true)
+    @Column(name = "employee_id", nullable = false, unique = true)
     public int id;
 
     @Column(nullable = false, name = "employeeName")
-    public String employeeName;
-
-    @Column(nullable = false, unique = true, name = "email")
-    public String emailId;
-
-    @Column(nullable = false, name = "loginId",unique = true)
-    public String loginId;
-
-    @Column(nullable = false, name = "department")
-    public String department;
-
-    @Column
-    private String status;
+    public String employeesName;
 
     @Column
     private boolean employeeAddedByAdmin;
+
+    @ManyToOne(fetch = FetchType.EAGER,cascade = CascadeType.DETACH)
+    @JoinColumn(name = "team_id", referencedColumnName = "team_id")
+    public Team team;
 
 
 }

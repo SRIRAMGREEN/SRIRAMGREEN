@@ -1,7 +1,8 @@
 package com.timesheet.module.task.entity;
 
+import com.timesheet.module.Employee.entity.Employee;
 import com.timesheet.module.project.entity.Project;
-import com.timesheet.module.team.entity.Team;
+import com.timesheet.module.timesheet.entity.Timesheet;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -9,7 +10,6 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import java.util.Date;
-import java.util.List;
 
 
 @Entity
@@ -34,11 +34,11 @@ public class Task {
     @Column(name = "taskEndDate")
     public Date taskEndDate;
 
-    @Column(nullable = false, name = "taskEffort", unique = true)
+    @Column(nullable = false, name = "taskEffort")
     public String taskEffort;
 
     @Column(name = "percentageOfAllocation")
-    public String percentageOfAllocation;
+    public double percentageOfAllocation;
 
     @Column(name = "taskDescription")
     public String taskDescription;
@@ -46,11 +46,17 @@ public class Task {
     @Column(name = "taskStatus")
     public String status;
 
+    @OneToOne(fetch = FetchType.LAZY,cascade = CascadeType.DETACH)
+    @JoinColumn(name = "employee_id",referencedColumnName = "employee_id")
+    public Employee employee;
+
+    @ManyToOne(cascade = CascadeType.DETACH, fetch = FetchType.LAZY)
+    @JoinColumn(name = "timesheet_id", referencedColumnName = "timesheet_id")
+    private Timesheet timesheet;
 
     @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.DETACH)
     @JoinColumn(name = "project_id", referencedColumnName = "project_id")
-    public Project project;
+    private Project project;
 
-    @OneToMany(fetch = FetchType.LAZY, targetEntity = Team.class, mappedBy = "task")
-    public List<Team> team;
+
 }

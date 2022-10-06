@@ -2,6 +2,7 @@ package com.timesheet.module.client.entity;
 
 import com.timesheet.module.project.entity.Project;
 import com.timesheet.module.projectmanager.entity.ProjectManager;
+import com.timesheet.module.timesheet.entity.TimesheetLogs;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -29,10 +30,10 @@ public class Client {
     @Column(name = "description")
     public String description;
 
-    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.DETACH)
-    @JoinColumn(name = "manager_id",referencedColumnName = "manager_id")
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.DETACH)
+    @JoinColumn(name = "project_manager_id",referencedColumnName = "manager_id")
     public ProjectManager projectManager;
 
-    @OneToMany(fetch = FetchType.LAZY,targetEntity = Project.class,mappedBy = "client")
-    private List<Project> project;
+    @OneToMany(targetEntity = Project.class, mappedBy = "client", fetch = FetchType.EAGER)
+    public List<Project> project;
 }

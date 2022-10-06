@@ -1,11 +1,10 @@
 package com.timesheet.module.registration.controller;
 
 import com.timesheet.module.registration.entity.Registration;
-import com.timesheet.module.registration.entity.dto.ChangePasswordDto;
+import com.timesheet.module.registration.dto.ChangePasswordDto;
 import com.timesheet.module.registration.service.TimesheetRegistrationService;
 import com.timesheet.module.utils.TimeSheetErrorCodes;
 import com.timesheet.module.utils.exceptions.ControllerException;
-import com.timesheet.module.utils.exceptions.ServiceException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +19,7 @@ public class RegistrationController {
     private TimesheetRegistrationService registrationService;
 
     @PostMapping(value = "/createAccount")
-    public ResponseEntity<Boolean > insertDetails(@RequestBody Registration registration) {
+    public ResponseEntity<Registration > insertDetails(@RequestBody Registration registration) {
         return new ResponseEntity<>(registrationService.insertDetails(registration), HttpStatus.OK);
 
     }
@@ -62,14 +61,5 @@ public class RegistrationController {
         return new ResponseEntity<Boolean>(registrationService.forgotPassword(emailId), HttpStatus.OK);
     }
 
-//    @PostMapping(value = "/failedEmployeesRegistration")
-//    public void sendMailForFailedEmployeesRegistrations(@RequestParam Map<Integer, List<String>> failedMap) {
-//        try {
-//            registrationService.sendMailForFailedEmployeesRegistration(failedMap);
-//            new ResponseEntity<>("EmployeesRegistration Failed ", HttpStatus.BAD_REQUEST);
-//        } catch (ServiceException e) {
-//            throw new ServiceException(DATA_NOT_SAVED.getErrorCode(), DATA_NOT_SAVED.getErrorDesc());
-//        }
-//    }
 
 }

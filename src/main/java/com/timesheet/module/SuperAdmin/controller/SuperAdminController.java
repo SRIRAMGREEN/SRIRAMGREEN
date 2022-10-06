@@ -1,5 +1,6 @@
 package com.timesheet.module.SuperAdmin.controller;
 
+
 import com.timesheet.module.Employee.entity.Employee;
 import com.timesheet.module.Employee.service.EmployeeService;
 import com.timesheet.module.SuperAdmin.dto.EmployeeDto2;
@@ -30,23 +31,26 @@ public class SuperAdminController {
 
     Logger logger = LoggerFactory.getLogger(SuperAdminController.class);
 
-    @PostMapping(value = "/addEmployeeDetails", produces = {"application/json"})
+    @PostMapping(value = "/addEmployeeData")
     public ResponseEntity<EmployeeDto2> addEmployeeDetails(@RequestBody Employee employee) {
         logger.info("SuperAdminController || addEmployeeDetails || Adding the addEmployeeDetails ");
-        return new ResponseEntity<>(employeeServices.addEmployee(employee), HttpStatus.OK);
+        return new ResponseEntity<>(employeeServices.addEmployeeByAdmin(employee), HttpStatus.OK);
     }
-    @PostMapping(value = "/addProjectManagerDetails", produces = {"application/json"})
+
+    @PostMapping(value = "/addProjectManagerDetails")
     public ResponseEntity<ProjectManagerDto2> addProjectManagerDetails(@RequestBody ProjectManager projectManager) {
         logger.info("SuperAdminController || addEmployeeDetails || Adding the addEmployeeDetails ");
         return new ResponseEntity<>(projectManagerServices.addProjectManager(projectManager), HttpStatus.OK);
     }
-    @GetMapping(value = "/getEmployeeByAdmin", produces = { "application/json" })
-    private List<EmployeeDto2>  getEmployeeByAdmin(){
+
+    @GetMapping(value = "/getEmployeeByAdmin")
+    public List<EmployeeDto2> getEmployeeByAdmin() {
         logger.info("SuperAdminController || getUserByAdmin || Getting list of details of User ");
         return superAdminService.getEmployeeDetails();
     }
-    @GetMapping(value = "/getManagerByAdmin", produces = { "application/json" })
-    private List<ProjectManagerDto2>  getManagerByAdmin(){
+
+    @GetMapping(value = "/getManagerByAdmin")
+    public List<ProjectManagerDto2> getManagerByAdmin() {
         logger.info("SuperAdminController || getUserByAdmin || Getting list of details of User ");
         return superAdminService.getProjectManagerDetails();
     }
