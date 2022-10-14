@@ -1,7 +1,7 @@
 package com.timesheet.module.task.controller;
 
-import com.timesheet.module.task.entity.Task;
 import com.timesheet.module.task.dto.TaskDto;
+import com.timesheet.module.task.entity.Task;
 import com.timesheet.module.task.service.TaskService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,6 +34,12 @@ public class TaskController {
         return new ResponseEntity<>(taskService.getTaskByProjectId(projectId), HttpStatus.OK);
     }
 
+    @GetMapping(value = "/getAllTask")
+    public ResponseEntity<List<TaskDto>> getAllTask() {
+        logger.info("TaskController || getAllTask || Getting All task Details");
+        return new ResponseEntity<>(taskService.getAllTasks(), HttpStatus.OK);
+    }
+
     @GetMapping(value = "/getTaskByEmployeeId")
     public ResponseEntity<TaskDto> getTaskByEmployeeId(@RequestParam int id) {
         logger.info("TaskController || getTaskByEmployeeId || Getting the task Details from the EmployeeId");
@@ -52,10 +58,11 @@ public class TaskController {
         taskService.deleteTask(taskId);
         return "Task Data Deleted Successfully";
     }
+
     @PutMapping(value = "/percentageAllocation")
-    public double PercentageAllocation(@RequestParam int taskId,int date,int month, int year, int totalWeekDays) {
+    public double PercentageAllocation(@RequestParam int taskId, int totalWeekDays) {
         logger.info("Task controller || percentageAllocation || Updating the percentageAllocation Details to the Task Entity");
-        return (taskService.PercentageAllocation(taskId,date,month,year,totalWeekDays));
+        return (taskService.PercentageAllocation(taskId, totalWeekDays));
     }
 }
 

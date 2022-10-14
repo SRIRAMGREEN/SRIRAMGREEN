@@ -1,8 +1,11 @@
 package com.timesheet.module.task.dto;
 
+import com.timesheet.module.Employee.entity.Employee;
+import com.timesheet.module.projectmanager.entity.ProjectManager;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Getter
@@ -13,9 +16,9 @@ public class TaskDto {
 
     private String taskName;
 
-    private Date taskStartDate;
+    private LocalDateTime taskStartDate;
 
-    private Date taskEndDate;
+    private LocalDateTime taskEndDate;
 
     private String taskEffort;
 
@@ -25,4 +28,7 @@ public class TaskDto {
 
     private String status;
 
+    private Employee employee;
+
+    private ProjectManager projectManager;
 }

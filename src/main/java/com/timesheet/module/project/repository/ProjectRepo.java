@@ -14,5 +14,6 @@ public interface ProjectRepo extends JpaRepository<Project,Integer> {
     @Query(value ="SELECT * FROM project Where client_id =?;", nativeQuery = true )
     Optional<List<Project>> findProjectByClientId(int clientId);
 
-
+    @Query(value ="SELECT * FROM project Where project_manager_id =?;", nativeQuery = true )
+    Optional<List<Project>> findProjectByProjectManagerId(int id);
 }

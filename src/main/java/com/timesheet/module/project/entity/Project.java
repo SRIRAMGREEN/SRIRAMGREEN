@@ -1,6 +1,7 @@
 package com.timesheet.module.project.entity;
 
 import com.timesheet.module.client.entity.Client;
+import com.timesheet.module.projectmanager.entity.ProjectManager;
 import com.timesheet.module.task.entity.Task;
 
 import lombok.Getter;
@@ -35,6 +36,10 @@ public class Project  {
 
     @Column
     public Date projectEndDate;
+
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.DETACH)
+    @JoinColumn(name = "project_manager_id",referencedColumnName = "manager_id")
+    public ProjectManager projectManager;
 
     @ManyToOne(fetch = FetchType.EAGER,targetEntity = Client.class)
     @JoinColumn(name = "client_id", referencedColumnName = "client_id")

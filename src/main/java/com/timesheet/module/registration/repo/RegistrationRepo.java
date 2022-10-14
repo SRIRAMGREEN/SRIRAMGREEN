@@ -10,11 +10,8 @@ import java.util.Optional;
 @Repository
 public interface RegistrationRepo extends JpaRepository<Registration, Integer> {
     Registration findByEmailId(String emailId);
-
-
-    Optional<Registration> findByLoginId(String loginId);
+    Registration findByLoginId(String loginId);
     Registration findByToken(String token);
-
     @Query(value ="SELECT * FROM registration Where employee_name =?;", nativeQuery = true)
     Registration findByName(String name);
 }

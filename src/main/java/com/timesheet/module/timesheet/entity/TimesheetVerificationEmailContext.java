@@ -14,6 +14,15 @@ public class TimesheetVerificationEmailContext extends TimesheetAbstractEmailCon
         setTo(registration.getEmailId());
     }
 
+    public void initStatus(Registration registration) {
+        put("mail.smtp.starttls.enable", "true");
+        put("projectManager", registration.getEmployeeName());
+        setTemplateLocation("timesheetStatus-verification");
+        setSubject("TimesheetStatus Updated");
+        setFrom("jagadeesh.m@qbrainx.com");
+        setTo(registration.getEmailId());
+    }
+
     public void buildVerificationUrl(final String timesheetURL, String emailId) {
         final String url = UriComponentsBuilder.fromHttpUrl(timesheetURL).queryParam("verificationToken").toUriString();
         put("verificationURL", url);

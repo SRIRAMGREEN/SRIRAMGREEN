@@ -10,7 +10,7 @@ import java.util.Optional;
 public interface ProjectService {
 
     ProjectDto insertProject(Project project);
-
+    List<ProjectDto> getProjectByProjectManagerId(int id);
     List<ProjectDto> getProjectDetailsByClientId(int clientId);
     List<ProjectDto> getAllProjectDetails();
     ProjectDto updateProject(Project project);

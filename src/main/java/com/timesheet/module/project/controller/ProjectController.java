@@ -1,7 +1,7 @@
 package com.timesheet.module.project.controller;
 
-import com.timesheet.module.project.entity.Project;
 import com.timesheet.module.project.dto.ProjectDto;
+import com.timesheet.module.project.entity.Project;
 import com.timesheet.module.project.service.ProjectService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,14 +33,16 @@ public class ProjectController {
 
     @GetMapping(value = "/getProjectDetailsByClientId")
     public ResponseEntity<List<ProjectDto>> getProjectDetails(@RequestParam int clientId) {
-        logger.info("ProjectController || getProjectDetailsByClientId || getting the ProjectDetails by clientId {} ->",clientId);
+        logger.info("ProjectController || getProjectDetailsByClientId || getting the ProjectDetails by clientId {} ->", clientId);
         return new ResponseEntity<>(projectService.getProjectDetailsByClientId(clientId), HttpStatus.OK);
     }
+
     @GetMapping(value = "/getAllProjectDetails")
     public ResponseEntity<List<ProjectDto>> getAllProjectDetails() {
         logger.info("ProjectController || getAllProjectDetails || Getting the ProjectDetails Details from the project");
         return new ResponseEntity<>(projectService.getAllProjectDetails(), HttpStatus.OK);
     }
+
     @PutMapping(value = "/updateProject")
     public ResponseEntity<ProjectDto> updateProject(@RequestBody Project projects) {
         logger.info("ProjectController || updateProjectDetails || Updating the ProjectDetails Info {} //->", projects);
@@ -52,6 +54,12 @@ public class ProjectController {
         logger.info("ProjectController || deleteProjectDetails || Deleting the ProjectDetails {} // ->", projectId);
         projectService.deleteProject(projectId);
         return "Project Details Deleted Successfully";
+    }
+
+    @GetMapping(value = "/getProjectByProjectManagerId")
+    public ResponseEntity<List<ProjectDto>> getProjectByProjectManagerId(@RequestParam int id) {
+        logger.info("ProjectController || getProjectDetailsByProjectManagerId || getting the ProjectDetails by ProjectManagerId {} ->", id);
+        return new ResponseEntity<>(projectService.getProjectByProjectManagerId(id), HttpStatus.OK);
     }
 
     @PutMapping(value = "/insertImage", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})

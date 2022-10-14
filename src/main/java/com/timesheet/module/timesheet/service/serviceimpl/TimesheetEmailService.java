@@ -31,7 +31,6 @@ public class TimesheetEmailService {
             Context context = new Context();
             context.setVariables(email.getContext());
             String emailContent = templateEngine.process(email.getTemplateLocation(), context);
-
             mimeMessageHelper.setTo(email.getTo());
             mimeMessageHelper.setSubject(email.getSubject());
             mimeMessageHelper.setFrom(email.getFrom());

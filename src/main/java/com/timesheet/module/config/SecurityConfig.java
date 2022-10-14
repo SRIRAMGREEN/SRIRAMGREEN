@@ -46,10 +46,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                     .authorizeRequests()
                     .antMatchers("/api/**", "/swagger-ui/index.html#/", "/swagger-ui.html/**").permitAll()
                     .anyRequest().authenticated().and().httpBasic();
+//                    .formLogin()
+//                    .loginProcessingUrl("/registration/loginScreen").permitAll()
+//                    .and().httpBasic();
         }
 
-    @Override
-    public void configure(WebSecurity web) throws Exception {
-        web.ignoring().antMatchers("/registration/createAccount","/registration/verifyEmployeeAndProjectManager","/swagger-ui/index.html#/");
-    }
+//    @Override
+//    public void configure(WebSecurity web) throws Exception {
+//        web.ignoring().antMatchers("/registration/loginScreen","/registration/createAccount","/registration/verifyEmployeeAndProjectManager","/swagger-ui/index.html#/");
+//    }
 }

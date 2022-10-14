@@ -10,14 +10,14 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class UserDetailsGroup implements UserDetails {
-    private String username;
-    private String password;
-    private boolean isActive = true;
-    private List<GrantedAuthority> roles;
+    private final String username;
+    private final String password;
+    private final boolean isActive = true;
+    private final List<GrantedAuthority> roles;
 
     public UserDetailsGroup(Registration user) {
-        String roles = "";
-        if (user.getRoles().getRolesId() == 1) roles = "ROLE_MANAGER";
+        String roles = " ";
+        if (user.getRoles().getRolesId() == 1) roles = "ROLE_PROJECT MANAGER";
         else roles = "ROLE_EMPLOYEE";
         this.roles = Arrays.stream(roles.split(",")).map(SimpleGrantedAuthority::new).collect(Collectors.toList());
         this.username = user.getLoginId();

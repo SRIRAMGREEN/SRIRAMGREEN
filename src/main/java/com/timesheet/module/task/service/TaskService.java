@@ -13,10 +13,12 @@ public interface TaskService {
     List<TaskDto> getTaskByProjectId(int projectId);
 
     TaskDto getTaskByEmployeeId(int id);
+    List<TaskDto> getTaskByProjectManagerId(int id);
+    List<TaskDto>getAllTasks();
 
     TaskDto updateTask(Task task);
 
     String deleteTask(int taskId);
 
-    double PercentageAllocation(int taskId,int date,int month, int year, int totalWeekDays);
+    double PercentageAllocation(int taskId, int totalWeekDays);
 }

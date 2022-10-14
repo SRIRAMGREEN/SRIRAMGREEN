@@ -72,13 +72,14 @@ public class TimesheetRegistrationServiceImpl implements TimesheetRegistrationSe
 
     @Override
     public Registration getLoginDetails(Registration registration) {
-        Optional<Registration> savedRegistration = Optional.ofNullable(registrationRepository.findByLoginId(registration.getLoginId()).get());
+        Optional<Registration> savedRegistration = Optional.ofNullable(registrationRepository.findByLoginId(registration.getLoginId()));
+        BCryptPasswordEncoder decoder = new BCryptPasswordEncoder();
         if (savedRegistration.isPresent()) {
             log.debug("savedRegistration>>>" + savedRegistration);
             if (!ObjectUtils.isEmpty(registration)) {
-                String validPassword = EncryptorDecryptor.decrypt(String.valueOf(savedRegistration.get().getPassword()));
-                log.debug("validPassword>>>" + validPassword);
-                if (validPassword.equals(registration.getPassword())) {
+                boolean isValid = decoder.matches(registration.getPassword(), savedRegistration.get().getPassword());
+                log.debug("validPassword>>>" + isValid);
+                if (isValid) {
                     return savedRegistration.get();
                 } else {
                     throw new ServiceException(INVALID_PASSWORD.getErrorCode(), INVALID_PASSWORD.getErrorDesc());

@@ -1,6 +1,8 @@
 package com.timesheet.module.projectmanager.entity;
 
 import com.timesheet.module.client.entity.Client;
+import com.timesheet.module.project.entity.Project;
+import com.timesheet.module.task.entity.Task;
 import lombok.*;
 
 import javax.persistence.*;
@@ -24,7 +26,12 @@ public class ProjectManager {
     @Column
     public boolean projectManagerAddedByAdmin;
 
+    @OneToMany(targetEntity = Project.class, mappedBy = "projectManager", fetch = FetchType.LAZY)
+    public List<Project> project;
+
     @OneToMany(targetEntity = Client.class, mappedBy = "projectManager", fetch = FetchType.EAGER)
     private List<Client> client;
 
+    @OneToMany(targetEntity = Task.class, mappedBy = "projectManager", fetch = FetchType.LAZY)
+    public List<Task> task;
 }

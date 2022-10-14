@@ -16,9 +16,8 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     private RegistrationRepo registrationRepo;
 
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Registration registration = registrationRepo.findByLoginId(username)
-                .orElseThrow(() -> new IllegalArgumentException("User Not Found!!"));
+    public UserDetails loadUserByUsername(String loginId) throws UsernameNotFoundException {
+        Registration registration = registrationRepo.findByLoginId(loginId);
         return new UserDetailsGroup(registration);
     }
 }

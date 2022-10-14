@@ -1,7 +1,7 @@
 package com.timesheet.module.task.service.impl;
 
-
 import com.timesheet.module.Employee.repository.EmployeeRepo;
+import com.timesheet.module.projectmanager.repository.ProjectManagerRepo;
 import com.timesheet.module.registration.entity.Registration;
 import com.timesheet.module.registration.repo.RegistrationRepo;
 import com.timesheet.module.task.dto.TaskDto;
@@ -22,13 +22,11 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import javax.mail.MessagingException;
 import javax.transaction.Transactional;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
@@ -42,13 +40,15 @@ public class TaskServiceImpl implements TaskService {
 
     @Autowired
     TaskEmailService taskEmailService;
-
     @Autowired
     EmployeeRepo employeeRepo;
     @Autowired
     TaskRepo taskRepo;
     @Autowired
     ModelMapper modelMapper;
+
+    @Autowired
+    ProjectManagerRepo projectManagerRepo;
 
     @Autowired
     JavaMailSender javaMailSender;
@@ -66,18 +66,32 @@ public class TaskServiceImpl implements TaskService {
 
         logger.info("TaskServiceImpl || addTask ||Adding the client Details");
         Timesheet timesheet = new Timesheet();
-        timesheet.setManagerId(getLoggerInUser().getId());
-        timesheet.setEmployee(employeeRepo.findById(task.getEmployee().getId()).orElseThrow(() -> new IllegalArgumentException("Employee Not Found")));
-        Timesheet savedTimesheet = timesheetRepo.save(timesheet);
-        task.setTimesheet(savedTimesheet);
-        Task savedTask = taskRepo.save(task);
-        modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.LOOSE);
-        modelMapper.map(savedTask, TaskDto.class);
-        Registration registration = registrationRepo.findById(task.getEmployee().getId()).orElseThrow(() -> new IllegalArgumentException(("Employee not Found!!")));
-        TaskVerificationEmailContextTask email = new TaskVerificationEmailContextTask();
-        email.init(registration);
-        email.buildVerificationUrl(taskURL, registration.getEmailId());
-        taskEmailService.sendMail(email);
+        Task savedTask;
+        Timesheet savedTimesheet;
+        try {
+//            timesheet.setManagerId(getLoggedInUser().getId());
+            timesheet.setManagerId(task.getProjectManager().getId());
+            timesheet.setEmployee(employeeRepo.findById(task.getEmployee().getId()).orElseThrow(() -> new IllegalArgumentException("Employee Not Found")));
+            savedTimesheet = timesheetRepo.save(timesheet);
+            task.setTimesheet(savedTimesheet);
+
+        } catch (Exception e) {
+            throw new ServiceException(DATA_NOT_SAVED.getErrorCode(), "timesheet Not Saved ");
+        }
+        try {
+            savedTask = taskRepo.save(task);
+            savedTimesheet.setTask(savedTask);
+            Timesheet savedTimesheet2 = timesheetRepo.save(savedTimesheet);
+            modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.LOOSE);
+            modelMapper.map(savedTask, TaskDto.class);
+            Registration registration = registrationRepo.findById(task.getEmployee().getId()).orElseThrow(() -> new IllegalArgumentException(("Employee not Found!!")));
+            TaskVerificationEmailContextTask email = new TaskVerificationEmailContextTask();
+            email.init(registration);
+            email.buildVerificationUrl(taskURL, registration.getEmailId());
+            taskEmailService.sendMail(email);
+        } catch (Exception e) {
+            throw new ServiceException(DATA_NOT_SAVED.getErrorCode(), "Data not saved");
+        }
         return modelMapper.map(savedTask, TaskDto.class);
 
     }
@@ -86,7 +100,7 @@ public class TaskServiceImpl implements TaskService {
     @Transactional
     public List<TaskDto> getTaskByProjectId(int projectId) {
         try {
-            Optional<List<Task>> task = taskRepo.findByProjectProjectId(projectId);
+            Optional<List<Task>> task = taskRepo.findTaskProjectId(projectId);
             List<TaskDto> taskDtoList = new ArrayList<>();
             if (task.isPresent()) {
                 for (Task task1 : task.get()) {
@@ -102,7 +116,6 @@ public class TaskServiceImpl implements TaskService {
         } catch (Exception e) {
             throw new ServiceException(INVALID_REQUEST.getErrorCode(), "Invalid req");
         }
-
     }
 
     @Transactional
@@ -121,6 +134,51 @@ public class TaskServiceImpl implements TaskService {
             throw new ServiceException(DATA_NOT_FOUND.getErrorCode(), "Invalid req/Id not found");
         }
     }
+
+    @Override
+    public List<TaskDto> getTaskByProjectManagerId(int id) {
+        try {
+            Optional<List<Task>> tasks = taskRepo.findTaskByProjectManagerId(id);
+            List<TaskDto> taskDtoList = new ArrayList<>();
+            if (tasks.isPresent()) {
+                for (Task task : tasks.get()) {
+                    TaskDto taskDto = modelMapper.map(task, TaskDto.class);
+                    taskDtoList.add(taskDto);
+                }
+                return taskDtoList;
+            } else {
+                throw new NullPointerException();
+            }
+        } catch (NullPointerException e) {
+            throw new ServiceException(DATA_NOT_FOUND.getErrorCode(), "Invalid req/Id not found");
+        } catch (Exception e) {
+            throw new ServiceException(INVALID_REQUEST.getErrorCode(), "Invalid req");
+        }
+
+    }
+
+    @Override
+    public List<TaskDto> getAllTasks() {
+        logger.info("TaskServiceImpl || getAllTasks || Get all task from the taskEntity");
+        try {
+            Optional<List<Task>> taskList = Optional.ofNullable(taskRepo.findAll());
+            List<TaskDto> taskDtoList = new ArrayList<>();
+            if (taskList.isPresent()) {
+                for (Task task : taskList.get()) {
+                    TaskDto taskDto = modelMapper.map(task, TaskDto.class);
+                    taskDtoList.add(taskDto);
+                }
+                return taskDtoList;
+            } else {
+                throw new ServiceException(DATA_NOT_FOUND.getErrorCode());
+            }
+        } catch (NullPointerException e) {
+            throw new ServiceException(INVALID_REQUEST.getErrorCode(), "Invalid request");
+        } catch (ServiceException e) {
+            throw new ServiceException(DATA_NOT_FOUND.getErrorCode(), "No data");
+        }
+    }
+
 
     @Override
     public TaskDto updateTask(Task task) {
@@ -157,29 +215,28 @@ public class TaskServiceImpl implements TaskService {
 
     @Transactional
     @Override
-    public double PercentageAllocation(int taskId, int date, int month, int year, int totalWeekDays) {
+    public double PercentageAllocation(int taskId, int totalWeekDays) {
         logger.info("TaskServiceImpl  || updateTask || DataSet was updated in task=={}", taskId);
         double percentage;
         int diffInDays;
-        LocalDate date1 = LocalDate.now();
-        LocalDate date2 = LocalDate.of(year, month, date);
         logger.info("TaskServiceImpl  || getNumberOfDays || getting the count of days between two dates");
-        diffInDays = (int) ChronoUnit.DAYS.between(date1, date2);
-        logger.info("TaskServiceImpl  || getPercentage || getting the percentage of days count");
+        Task percent = taskRepo.findById(taskId).orElseThrow(() -> new IllegalArgumentException("Invalid Task Id"));
+        LocalDateTime taskStartDate = percent.getTaskStartDate();
+        LocalDateTime taskEndDate = percent.getTaskEndDate();
+        diffInDays = (int) ChronoUnit.DAYS.between(taskStartDate, taskEndDate);
         percentage = (100 * diffInDays) / totalWeekDays;
-        Optional<Task> percent = taskRepo.findById(taskId);
-        percent.get().setTaskEffort(String.valueOf(diffInDays));
-        percent.get().setPercentageOfAllocation(percentage);
-        Task task = taskRepo.save(percent.get());
+        percent.setTaskEffort(String.valueOf(diffInDays));
+        percent.setPercentageOfAllocation(percentage);
+        Task task = taskRepo.save(percent);
         taskRepo.save(task);
         logger.info("TaskServiceImpl  || getNumberOfDays || getting the count of days between two dates 0-{}", percent);
         return percentage;
     }
 
-    private Registration getLoggerInUser() {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        String loginId = auth.getName();
-        return registrationRepo.findByLoginId(loginId).get();
-    }
+//    private Registration getLoggedInUser() {
+//        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+//        String loginId = auth.getName();
+//        return registrationRepo.findByLoginId(loginId);
+//    }
 
 }

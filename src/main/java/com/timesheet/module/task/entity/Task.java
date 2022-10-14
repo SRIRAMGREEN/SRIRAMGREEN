@@ -2,6 +2,7 @@ package com.timesheet.module.task.entity;
 
 import com.timesheet.module.Employee.entity.Employee;
 import com.timesheet.module.project.entity.Project;
+import com.timesheet.module.projectmanager.entity.ProjectManager;
 import com.timesheet.module.timesheet.entity.Timesheet;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,8 +10,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.Date;
-
 
 @Entity
 @Table(name = "task")
@@ -29,10 +30,10 @@ public class Task {
     public String taskName;
 
     @Column(nullable = false, name = "taskStartDate")
-    public Date taskStartDate;
+    public LocalDateTime taskStartDate;
 
     @Column(name = "taskEndDate")
-    public Date taskEndDate;
+    public LocalDateTime taskEndDate;
 
     @Column(nullable = false, name = "taskEffort")
     public String taskEffort;
@@ -50,7 +51,7 @@ public class Task {
     @JoinColumn(name = "employee_id",referencedColumnName = "employee_id")
     public Employee employee;
 
-    @ManyToOne(cascade = CascadeType.DETACH, fetch = FetchType.LAZY)
+    @OneToOne(cascade = CascadeType.DETACH, fetch = FetchType.LAZY)
     @JoinColumn(name = "timesheet_id", referencedColumnName = "timesheet_id")
     private Timesheet timesheet;
 
@@ -58,5 +59,8 @@ public class Task {
     @JoinColumn(name = "project_id", referencedColumnName = "project_id")
     private Project project;
 
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.DETACH)
+    @JoinColumn(name = "project_manager_id",referencedColumnName = "manager_id")
+    public ProjectManager projectManager;
 
 }
