@@ -12,6 +12,7 @@ import lombok.Setter;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Table(name = "task")
@@ -47,9 +48,12 @@ public class Task {
     @Column(name = "taskStatus")
     public String status;
 
-    @OneToOne(fetch = FetchType.LAZY,cascade = CascadeType.DETACH)
-    @JoinColumn(name = "employee_id",referencedColumnName = "employee_id")
-    public Employee employee;
+//    @OneToOne(fetch = FetchType.LAZY,cascade = CascadeType.DETACH)
+//    @JoinColumn(name = "employee_id",referencedColumnName = "employee_id")
+//    public Employee employee;
+
+    @OneToMany(targetEntity = Employee.class, mappedBy = "task", fetch = FetchType.EAGER)
+    public List<Employee> employees;
 
     @OneToOne(cascade = CascadeType.DETACH, fetch = FetchType.LAZY)
     @JoinColumn(name = "timesheet_id", referencedColumnName = "timesheet_id")
