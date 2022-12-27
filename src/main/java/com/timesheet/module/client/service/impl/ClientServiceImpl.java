@@ -13,6 +13,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 
 import java.util.ArrayList;
@@ -20,6 +22,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static com.timesheet.module.utils.TimeSheetErrorCodes.*;
+import static com.timesheet.module.utils.TimesheetConstants.IMAGE_REGEX;
 
 @Service
 public class ClientServiceImpl implements ClientService {
@@ -39,9 +42,9 @@ public class ClientServiceImpl implements ClientService {
             modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.LOOSE);
             return modelMapper.map(client, ClientDto.class);
         } catch (NullPointerException e) {
-            throw new ServiceException(INVALID_REQUEST.getErrorCode(), "Invalid request");
+            throw new ServiceException(INVALID_REQUEST.getErrorCode(), INVALID_REQUEST.getErrorDesc());
         } catch (Exception e) {
-            throw new ServiceException(DATA_NOT_SAVED.getErrorCode(), "Invalid data");
+            throw new ServiceException(DATA_NOT_SAVED.getErrorCode(), DATA_NOT_SAVED.getErrorDesc());
         }
     }
 
@@ -58,9 +61,9 @@ public class ClientServiceImpl implements ClientService {
                 throw new NullPointerException();
             }
         } catch (NullPointerException e) {
-            throw new ServiceException(DATA_NOT_FOUND.getErrorCode(), "Invalid request/Id not found");
+            throw new ServiceException(DATA_NOT_FOUND.getErrorCode(), DATA_NOT_FOUND.getErrorDesc());
         } catch (Exception e) {
-            throw new ServiceException(INVALID_REQUEST.getErrorCode(), "Invalid data");
+            throw new ServiceException(INVALID_REQUEST.getErrorCode(), INVALID_REQUEST.getErrorDesc());
         }
     }
 
@@ -81,11 +84,11 @@ public class ClientServiceImpl implements ClientService {
                 throw new ServiceException(DATA_NOT_FOUND.getErrorCode());
             }
         } catch (NullPointerException e) {
-            throw new ServiceException(INVALID_REQUEST.getErrorCode(), "Invalid request");
+            throw new ServiceException(INVALID_REQUEST.getErrorCode(), INVALID_REQUEST.getErrorDesc());
         } catch (ServiceException e) {
-            throw new ServiceException(DATA_NOT_FOUND.getErrorCode(), "No data");
+            throw new ServiceException(DATA_NOT_FOUND.getErrorCode(), DATA_NOT_FOUND.getErrorDesc());
         } catch (Exception e) {
-            throw new ServiceException(EXPECTATION_FAILED.getErrorCode(), "data not retrieved");
+            throw new ServiceException(EXPECTATION_FAILED.getErrorCode(), EXPECTATION_FAILED.getErrorDesc());
         }
     }
 
@@ -101,26 +104,49 @@ public class ClientServiceImpl implements ClientService {
                 BeanUtils.copyProperties(client2, clientDto, NullPropertyName.getNullPropertyNames(client2));
                 return clientDto;
             } else {
-                throw new ServiceException(DATA_NOT_FOUND.getErrorCode(), "Invalid ID or values");
+                throw new ServiceException(DATA_NOT_FOUND.getErrorCode(), DATA_NOT_FOUND.getErrorDesc());
             }
         } catch (NullPointerException e) {
-            throw new ServiceException(INVALID_REQUEST.getErrorCode(), "Invalid data");
+            throw new ServiceException(INVALID_REQUEST.getErrorCode(), INVALID_REQUEST.getErrorDesc());
         } catch (Exception e) {
-            throw new ServiceException(DATA_NOT_SAVED.getErrorCode(), "Data not saved");
+            throw new ServiceException(DATA_NOT_SAVED.getErrorCode(), DATA_NOT_SAVED.getErrorDesc());
         }
     }
 
 
     @Override
-    public String deleteClient(int client_id) {
+    public void deleteClient(int client_id) {
         logger.info("ClientServiceImpl || deleteClient || Client detail was deleted by particular ClientId=={}", client_id);
         try {
             clientRepo.deleteById(client_id);
         } catch (NullPointerException e) {
-            throw new ServiceException(INVALID_REQUEST.getErrorCode(), "Invalid request");
+            throw new ServiceException(INVALID_REQUEST.getErrorCode(), INVALID_REQUEST.getErrorDesc());
         } catch (Exception e) {
-            throw new ServiceException(DATA_NOT_FOUND.getErrorCode(), "Invalid Input");
+            throw new ServiceException(DATA_NOT_FOUND.getErrorCode(), DATA_NOT_FOUND.getErrorDesc());
         }
-        return "Client Deleted Successfully";
+    }
+
+    @Transactional
+    @Override
+    public String insertImage(Optional<MultipartFile> image, int clientId) {
+        Optional<Client> client = clientRepo.findById(clientId);
+        if (client.isPresent()) {
+            try {
+                Client clients = client.get();
+                if (image.isPresent()) {
+                    clients.setImage(image.get().getBytes());
+                    clientRepo.save(clients);
+                } else {
+                    throw new NullPointerException();
+                }
+            } catch (NullPointerException e) {
+                throw new ServiceException(INVALID_REQUEST.getErrorCode());
+            } catch (Exception e) {
+                throw new ServiceException(IMAGE_REGEX, "Invalid image format");
+            }
+        } else {
+            throw new ServiceException(DATA_NOT_FOUND.getErrorCode(), "Invalid data");
+        }
+        return "Client Image Inserted Successfully";
     }
 }

@@ -43,9 +43,8 @@ public class ProjectManagerController {
 
 
     @DeleteMapping(value = "/deleteProjectManagerData")
-    public String deleteProjectManagerDetails(@RequestParam int projectManagerId) {
+    public void deleteProjectManagerDetails(@RequestParam int projectManagerId) {
         logger.info("ProjectController || deleteProjectManagerDetails || Deleting the project manager Info {} ", projectManagerId);
         projectManagerService.deleteProjectManager(projectManagerId);
-        return "ProjectManager Details Deleted Successfully";
     }
 }

@@ -18,7 +18,7 @@ public interface ProjectManagerService {
     ProjectManagerDto updateProjectManager(ProjectManager projectManager);
 
 
-    String deleteProjectManager(int projectManagerId);
+    void deleteProjectManager(int projectManagerId);
 
     void addEntryToProjectManager(Registration registration);
 }

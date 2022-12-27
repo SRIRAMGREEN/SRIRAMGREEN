@@ -25,6 +25,12 @@ public class EmployeeController {
         return new ResponseEntity<>(employeeService.getEmployeeData(employeeId), HttpStatus.OK);
     }
 
+    @GetMapping(value = "/getAllEmployeeDetails")
+    public ResponseEntity<List<EmployeeDto>> getAllEmployeeDetails() {
+        logger.info("ProjectController || getAllProjectDetails || Getting the ProjectDetails Details from the project");
+        return new ResponseEntity<>(employeeService.getAllEmployeeDetails(), HttpStatus.OK);
+    }
+
     @GetMapping(value = "/getEmployeeByTeamId")
     public ResponseEntity<List<EmployeeDto>> getEmployeeByTeamId(int teamId) {
         logger.info("EmployeeController || getAllEmployeeByTaskId || getting the employee Details ");
@@ -36,15 +42,16 @@ public class EmployeeController {
         logger.info("EmployeeController || updateEmployeeDetails || Updating the employee Info {} ", employee);
         return new ResponseEntity<>(employeeService.updateEmployee(employee), HttpStatus.OK);
     }
+
     @PutMapping(value = "/updateEmployeeTeamDetails")
-    public ResponseEntity<EmployeeDto> updateEmployeeTeamDetails(@RequestParam int employeeId,@RequestParam int teamID) {
+    public ResponseEntity<EmployeeDto> updateEmployeeTeamDetails(@RequestParam int employeeId, @RequestParam int teamID) {
         logger.info("EmployeeController || updateEmployeeDetails || Updating the employee Info {} ", employeeId);
-        return new ResponseEntity<>(employeeService.updateEmployeeTeam(employeeId,teamID), HttpStatus.OK);
+        return new ResponseEntity<>(employeeService.updateEmployeeTeam(employeeId, teamID), HttpStatus.OK);
     }
+
     @DeleteMapping(value = "/deleteEmployee")
-    public String deleteClientDetails(@RequestParam int employeeId) {
+    public void deleteClientDetails(@RequestParam int employeeId) {
         logger.info("EmployeeController || deleteEmployee || Deleting the employee Info {} ", employeeId);
         employeeService.deleteUser(employeeId);
-        return "Employee Deleted Successfully";
     }
 }

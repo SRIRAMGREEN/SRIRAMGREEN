@@ -46,30 +46,8 @@ public class ProjectServiceImpl implements ProjectService {
         } catch (NullPointerException e) {
             throw new ServiceException(INVALID_REQUEST.getErrorCode(), "Invalid request");
         } catch (Exception e) {
-            throw new ServiceException(DATA_NOT_SAVED.getErrorCode(), "Invalid data's");
+            throw new ServiceException(DATA_NOT_SAVED.getErrorCode(), "Invalid data");
         }
-    }
-
-    @Override
-    public List<ProjectDto> getProjectByProjectManagerId(int id) {
-        try {
-            Optional<List<Project>> projects = projectRepo.findProjectByProjectManagerId(id);
-            List<ProjectDto> projectDtoList = new ArrayList<>();
-            if (projects.isPresent()) {
-                for (Project project : projects.get()) {
-                    ProjectDto projectDto = modelMapper.map(project, ProjectDto.class);
-                    projectDtoList.add(projectDto);
-                }
-                return projectDtoList;
-            } else {
-                throw new NullPointerException();
-            }
-        } catch (NullPointerException e) {
-            throw new ServiceException(DATA_NOT_FOUND.getErrorCode(), "Invalid req/Id not found");
-        } catch (Exception e) {
-            throw new ServiceException(INVALID_REQUEST.getErrorCode(), "Invalid req");
-        }
-
     }
 
     @Transactional
@@ -93,6 +71,7 @@ public class ProjectServiceImpl implements ProjectService {
         } catch (Exception e) {
             throw new ServiceException(INVALID_REQUEST.getErrorCode(), "Invalid req");
         }
+
     }
 
     @Override

@@ -12,7 +12,6 @@ import lombok.Setter;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.Date;
-import java.util.List;
 
 @Entity
 @Table(name = "task")
@@ -30,11 +29,11 @@ public class Task {
     @Column(nullable = false, name = "taskName")
     public String taskName;
 
-    @Column(nullable = false, name = "taskStartDate")
-    public LocalDateTime taskStartDate;
+    @Temporal(TemporalType.DATE)
+    public Date taskStartDate;
 
-    @Column(name = "taskEndDate")
-    public LocalDateTime taskEndDate;
+    @Temporal(TemporalType.DATE)
+    public Date taskEndDate;
 
     @Column(nullable = false, name = "taskEffort")
     public String taskEffort;
@@ -48,12 +47,9 @@ public class Task {
     @Column(name = "taskStatus")
     public String status;
 
-//    @OneToOne(fetch = FetchType.LAZY,cascade = CascadeType.DETACH)
-//    @JoinColumn(name = "employee_id",referencedColumnName = "employee_id")
-//    public Employee employee;
-
-    @OneToMany(targetEntity = Employee.class, mappedBy = "task", fetch = FetchType.EAGER)
-    public List<Employee> employees;
+    @OneToOne(fetch = FetchType.EAGER,cascade = CascadeType.DETACH)
+    @JoinColumn(name = "employee_id",referencedColumnName = "employee_id")
+    public Employee employee;
 
     @OneToOne(cascade = CascadeType.DETACH, fetch = FetchType.LAZY)
     @JoinColumn(name = "timesheet_id", referencedColumnName = "timesheet_id")

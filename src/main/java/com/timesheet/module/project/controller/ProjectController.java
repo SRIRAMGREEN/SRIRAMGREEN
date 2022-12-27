@@ -6,6 +6,7 @@ import com.timesheet.module.project.service.ProjectService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -50,10 +51,15 @@ public class ProjectController {
     }
 
     @DeleteMapping(value = "/deleteProjectData")
-    public String deleteProject(@RequestParam int projectId) {
+    public void deleteProject(@RequestParam int projectId) {
         logger.info("ProjectController || deleteProjectDetails || Deleting the ProjectDetails {} // ->", projectId);
         projectService.deleteProject(projectId);
-        return "Project Details Deleted Successfully";
+    }
+
+    @GetMapping(value = "/getProjectByProjectManagerId")
+    public ResponseEntity<List<ProjectDto>> getProjectByProjectManagerId(@RequestParam int id) {
+        logger.info("ProjectController || getProjectDetailsByProjectManagerId || getting the ProjectDetails by ProjectManagerId {} ->", id);
+        return new ResponseEntity<>(projectService.getProjectByProjectManagerId(id), HttpStatus.OK);
     }
 
     @GetMapping(value = "/getProjectByProjectManagerId")
@@ -69,4 +75,5 @@ public class ProjectController {
         return new ResponseEntity<>("Image Inserted", HttpStatus.OK);
 
     }
+
 }

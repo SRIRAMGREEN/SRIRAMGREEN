@@ -40,14 +40,14 @@ public class TeamServiceImpl implements TeamService {
                 }
                 return teamDtoList;
             } else {
-                throw new ServiceException(DATA_NOT_FOUND.getErrorCode());
+                throw new ServiceException(DATA_NOT_FOUND.getErrorCode(), DATA_NOT_FOUND.getErrorDesc());
             }
         } catch (NullPointerException e) {
-            throw new ServiceException(INVALID_REQUEST.getErrorCode(), "Invalid request");
+            throw new ServiceException(EXPECTATION_FAILED.getErrorCode(), EXPECTATION_FAILED.getErrorDesc());
         } catch (ServiceException e) {
-            throw new ServiceException(DATA_NOT_FOUND.getErrorCode(), "No data");
+            throw new ServiceException(DATA_NOT_FOUND.getErrorCode(), DATA_NOT_FOUND.getErrorDesc());
         } catch (Exception e) {
-            throw new ServiceException(EXPECTATION_FAILED.getErrorCode(), "data not retrieved");
+            throw new ServiceException(INVALID_REQUEST.getErrorCode(), INVALID_REQUEST.getErrorDesc());
         }
     }
 }

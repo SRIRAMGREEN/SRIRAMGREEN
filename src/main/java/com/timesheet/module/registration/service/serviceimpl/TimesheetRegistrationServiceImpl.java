@@ -4,7 +4,6 @@ import com.timesheet.module.Employee.repository.EmployeeRepo;
 import com.timesheet.module.Employee.service.EmployeeService;
 import com.timesheet.module.projectmanager.repository.ProjectManagerRepo;
 import com.timesheet.module.projectmanager.service.ProjectManagerService;
-import com.timesheet.module.registration.dto.RegistrationDto;
 import com.timesheet.module.registration.entity.AccountVerificationEmailContext;
 import com.timesheet.module.registration.entity.ForgotPasswordToken;
 import com.timesheet.module.registration.entity.Registration;
@@ -87,7 +86,7 @@ public class TimesheetRegistrationServiceImpl implements TimesheetRegistrationSe
             }
             return registration;
         } else {
-            throw new ServiceException(INVALID_EMAIL_ID.getErrorCode(), "Incorrect LoginId");
+            throw new ServiceException(INVALID_EMAIL_ID.getErrorCode(), INVALID_EMAIL_ID.getErrorDesc());
         }
     }
 
@@ -100,7 +99,7 @@ public class TimesheetRegistrationServiceImpl implements TimesheetRegistrationSe
         try {
             emailMatcher = emailPattern.matcher(registration.getEmailId());
         } catch (Exception e) {
-            throw new ServiceException(DATA_NOT_FOUND.getErrorCode(), "Invalid");
+            throw new ServiceException(DATA_NOT_FOUND.getErrorCode(), DATA_NOT_FOUND.getErrorDesc());
         }
         boolean validEmail = emailMatcher.find();
         if (validEmail) {
@@ -122,7 +121,7 @@ public class TimesheetRegistrationServiceImpl implements TimesheetRegistrationSe
                             createProjectManagerAndEmployee(registration1);
                             return registration;
                         } catch (Exception e) {
-                            throw new ServiceException(DATA_NOT_SAVED.getErrorCode(), "Invalid Data");
+                            throw new ServiceException(DATA_NOT_SAVED.getErrorCode(), DATA_NOT_SAVED.getErrorDesc());
                         }
 
                     } else {
@@ -133,7 +132,7 @@ public class TimesheetRegistrationServiceImpl implements TimesheetRegistrationSe
                             createProjectManagerAndEmployee(savedRegistration);
                             return registration;
                         } catch (Exception e) {
-                            throw new ServiceException(DATA_NOT_SAVED.getErrorCode(), "Invalid Data");
+                            throw new ServiceException(DATA_NOT_SAVED.getErrorCode(), DATA_NOT_SAVED.getErrorDesc());
                         }
                     }
                 }
@@ -146,7 +145,7 @@ public class TimesheetRegistrationServiceImpl implements TimesheetRegistrationSe
                         createProjectManagerAndEmployee(registration1);
                         return registration;
                     } catch (Exception e) {
-                        throw new ServiceException(DATA_NOT_SAVED.getErrorCode(), "Invalid Data");
+                        throw new ServiceException(DATA_NOT_SAVED.getErrorCode(), DATA_NOT_SAVED.getErrorDesc());
 
                     }
 
@@ -158,9 +157,8 @@ public class TimesheetRegistrationServiceImpl implements TimesheetRegistrationSe
                         createProjectManagerAndEmployee(savedRegistration);
                         return registration;
                     } catch (Exception e) {
-                        throw new ServiceException(DATA_NOT_SAVED.getErrorCode(), "Invalid Data");
+                        throw new ServiceException(DATA_NOT_SAVED.getErrorCode(), DATA_NOT_SAVED.getErrorDesc());
                     }
-
                 }
             }
         } else {
@@ -199,7 +197,7 @@ public class TimesheetRegistrationServiceImpl implements TimesheetRegistrationSe
         try {
             registrationRepository.save(registration);
         } catch (Exception e) {
-            throw new ServiceException(DATA_NOT_SAVED.getErrorCode(), "Invalid Data");
+            throw new ServiceException(DATA_NOT_SAVED.getErrorCode(), DATA_NOT_SAVED.getErrorDesc());
         }
         verificationToken.setRegistration(registration);
         verificationTokenRepository.save(verificationToken);
@@ -223,7 +221,7 @@ public class TimesheetRegistrationServiceImpl implements TimesheetRegistrationSe
             try {
                 return registrationRepository.save(registration);
             } catch (Exception e) {
-                throw new ServiceException(DATA_NOT_SAVED.getErrorCode(), "Invalid Detail");
+                throw new ServiceException(DATA_NOT_SAVED.getErrorCode(), DATA_NOT_SAVED.getErrorDesc());
             }
 
         } catch (Exception e) {
@@ -247,8 +245,7 @@ public class TimesheetRegistrationServiceImpl implements TimesheetRegistrationSe
                 throw new ServiceException(USER_ALREADY_VERIFIED.getErrorCode(), USER_ALREADY_VERIFIED.getErrorDesc());
             } else {
                 logger.info("RegistrationServiceImpl || verifyRegistrationForProjectManagerAndEmployee || Account has been verified");
-                Registration registration = registrationRepository.findByEmailId(registration1.getEmailId());
-                return registration;
+                return registrationRepository.findByEmailId(registration1.getEmailId());
             }
         } else {
             throw new ServiceException(LINK_EXPIRED.getErrorCode(), LINK_EXPIRED.getErrorDesc());
@@ -282,7 +279,7 @@ public class TimesheetRegistrationServiceImpl implements TimesheetRegistrationSe
                 throw new ServiceException(INVALID_OLD_PASSWORD.getErrorCode(), INVALID_OLD_PASSWORD.getErrorDesc());
             }
         } catch (Exception e) {
-            throw new ServiceException(DATA_NOT_FOUND.getErrorCode(), "EmailId is wrong");
+            throw new ServiceException(DATA_NOT_FOUND.getErrorCode(), DATA_NOT_FOUND.getErrorDesc());
         }
     }
 
@@ -306,7 +303,7 @@ public class TimesheetRegistrationServiceImpl implements TimesheetRegistrationSe
             }
             return false;
         } catch (Exception e) {
-            throw new ServiceException(DATA_NOT_FOUND.getErrorCode(), "EmailId does not Exist");
+            throw new ServiceException(INVALID_EMAIL_ID.getErrorCode(), INVALID_EMAIL_ID.getErrorDesc());
         }
     }
 

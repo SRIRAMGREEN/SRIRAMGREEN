@@ -25,29 +25,23 @@ public class Timesheet {
     @Column(name = "timesheet_Id", unique = true)
     public int id;
 
-    @Column(name = "periodStartDate")
-    public LocalDateTime timesheetStartDate;
-
-    @Column(name = "periodEndDate")
-    public LocalDateTime timesheetEndDate;
-
     @Column(name = "totalHours")
     public Long totalHours;
-    @Column(name = "isTimeLimitExceeded")
-    public boolean isTimeLimitExceeded = false;
-    @Column(name = "timesheetStatus")
-    public Boolean timesheetStatus;
+
     @Column(name = "project_manager_id")
     private int managerId;
-    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.DETACH)
-    @JoinColumn(name = "employee_id", referencedColumnName = "employee_id")
+
+    @Column(name = "timesheetStatus")
+    public Boolean timesheetStatus = false;
+
+    @OneToOne(fetch = FetchType.LAZY,cascade = CascadeType.DETACH)
+    @JoinColumn(name = "employee_id",referencedColumnName = "employee_id")
     private Employee employee;
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.DETACH)
-    @JoinColumn(name = "task_id", referencedColumnName = "task_id")
-    private Task task;
+    @OneToMany(targetEntity = Task.class, mappedBy = "timesheet",fetch = FetchType.EAGER,cascade = CascadeType.ALL)
+    private List<Task> task;
 
-    @OneToMany(targetEntity = TimesheetLogs.class, mappedBy = "timesheet", fetch = FetchType.LAZY)
+    @OneToMany(targetEntity = TimesheetLogs.class, mappedBy = "timesheet",fetch = FetchType.LAZY)
     private List<TimesheetLogs> timesheetLogsList;
 
 }

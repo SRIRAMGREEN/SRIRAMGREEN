@@ -2,10 +2,8 @@ package com.timesheet.module.timesheet.service.serviceimpl;
 
 import com.timesheet.module.registration.entity.Registration;
 import com.timesheet.module.registration.repo.RegistrationRepo;
-import com.timesheet.module.task.entity.Task;
 import com.timesheet.module.task.repository.TaskRepo;
 import com.timesheet.module.timesheet.dto.TimesheetDto;
-import com.timesheet.module.timesheet.dto.TimesheetLogsDto;
 import com.timesheet.module.timesheet.entity.Timesheet;
 import com.timesheet.module.timesheet.entity.TimesheetLogs;
 import com.timesheet.module.timesheet.entity.TimesheetVerificationEmailContext;
@@ -23,17 +21,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.mail.MessagingException;
-import java.sql.Date;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
 import static com.timesheet.module.utils.TimeSheetErrorCodes.DATA_NOT_FOUND;
-import static com.timesheet.module.utils.TimeSheetErrorCodes.DATA_NOT_SAVED;
+
 
 @Service
 public class TimeSheetServiceImpl implements TimesheetService {
@@ -57,48 +51,32 @@ public class TimeSheetServiceImpl implements TimesheetService {
 
     @Override
     @Transactional
-    public List<TimesheetLogsDto> updateTimesheet(List<TimesheetLogs> timesheetLogs) throws MessagingException {
-
+    public TimesheetDto updateTimesheet(Timesheet timesheet) throws MessagingException {
         logger.info("TimeSheetServiceImpl || addClientDetails ||Adding the client Details");
         modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.LOOSE);
         AtomicLong totalHours = new AtomicLong(0l);
-        List<TimesheetLogs> savedTimesheetLogs = new ArrayList<>();
-        List<TimesheetLogsDto> savedTimesheetLogsDto = new ArrayList<>();
+        List<TimesheetLogs> timesheetLogs;
         try {
-            savedTimesheetLogs = timesheetLogs.stream().map(timesheetLogs1 -> {
+            timesheetLogs = timesheet.getTimesheetLogsList().stream().map(timesheetLogs1 -> {
                 totalHours.addAndGet(timesheetLogs1.getHours());
-                Timesheet timesheet = timesheetRepo.findByTask(timesheetLogs1.getTask()).get();
                 timesheetLogs1.setTimesheet(timesheet);
-                TimesheetLogs savedTimeSheetLog = timesheetLogsRepo.save(timesheetLogs1);
-                savedTimesheetLogsDto.add(modelMapper.map(savedTimeSheetLog,TimesheetLogsDto.class));
-                return savedTimeSheetLog;
+                return timesheetLogsRepo.save(timesheetLogs1);
             }).collect(Collectors.toList());
         } catch (Exception e) {
-            throw new ServiceException(DATA_NOT_SAVED.getErrorCode(),"TimesheetLogs Not Saved ");
+            throw new ServiceException("");
         }
-        List<LocalDateTime> collect = savedTimesheetLogs.stream().map(timesheetLogs1 -> timesheetLogs1.getDate()).collect(Collectors.toList());
-        Collections.sort(collect);
-        Task task = taskRepo.findById(timesheetLogs.get(0).getTask().getTaskId()).orElseThrow(() -> new IllegalArgumentException("Task Id not Found"));
-        Timesheet timesheet1 = timesheetRepo.findByTask(timesheetLogs.get(0).getTask()).orElseThrow(() -> new IllegalArgumentException("Timesheet ID Invalid!!"));
-        timesheet1.setTimesheetLogsList(timesheetLogs);
-
-        if (Collections.max(collect).isAfter(task.getTaskEndDate())) timesheet1.setTimeLimitExceeded(true);
-
-        timesheet1.setTimesheetStartDate(collect.get(0));
-        timesheet1.setTimesheetEndDate(Collections.max(collect));
-        timesheet1.setTotalHours(totalHours.get());
-        Timesheet savedTimesheet = new Timesheet();
-        try {
-            savedTimesheet = timesheetRepo.save(timesheet1);
-            Registration registration = registrationRepo.findById(timesheet1.getManagerId()).orElseThrow(() -> new IllegalArgumentException(("Timesheet not Found!!")));
-            TimesheetVerificationEmailContext email = new TimesheetVerificationEmailContext();
-            email.init(registration);
-            email.buildVerificationUrl(timesheetURL , registration.getEmailId());
-            timesheetEmailService.sendMail(email);
-        } catch (Exception e) {
-            throw new ServiceException(DATA_NOT_SAVED.getErrorCode(),"Data not saved");
-        }
-        return savedTimesheetLogsDto;
+        Timesheet timesheet1 = timesheetRepo.findById(timesheet.getId()).orElseThrow(() -> new IllegalArgumentException("Timesheet ID Invalid!!"));
+        timesheet.setTimesheetLogsList(timesheetLogs);
+        timesheet.setTotalHours(totalHours.get());
+        timesheet.setManagerId(timesheet1.getManagerId());
+        timesheet.setEmployee(timesheet1.getEmployee());
+        Timesheet savedTimesheet = timesheetRepo.save(timesheet);
+        Registration registration = registrationRepo.findById(timesheet.getManagerId()).orElseThrow(() -> new IllegalArgumentException(("Timesheet not Found!!")));
+        TimesheetVerificationEmailContext email = new TimesheetVerificationEmailContext();
+        email.init(registration);
+        email.buildVerificationUrl(timesheetURL, registration.getEmailId());
+        timesheetEmailService.sendMail(email);
+        return modelMapper.map(savedTimesheet, TimesheetDto.class);
     }
 
     @Transactional
@@ -147,24 +125,6 @@ public class TimeSheetServiceImpl implements TimesheetService {
         return "Timesheet Deleted Successfully";
     }
 
-    @Override
-    @Transactional
-    public TimesheetDto updateTimesheetStatus(int timesheet_id, boolean status) throws MessagingException {
-        Timesheet timesheet = timesheetRepo.findById(timesheet_id).orElseThrow(() -> new IllegalArgumentException("Timesheet id not found"));
-        timesheet.setTimesheetStatus(status);
-        Timesheet timesheet1 = new Timesheet();
-        try {
-            timesheet1 = timesheetRepo.save(timesheet);
-            Registration registration = registrationRepo.findById(timesheet.getEmployee().getId()).orElseThrow(() -> new IllegalArgumentException(("Employee not Found!!")));
-            TimesheetVerificationEmailContext email = new TimesheetVerificationEmailContext();
-            email.initStatus(registration);
-//            email.buildVerificationUrl(timesheetURL , registration.getEmailId());
-            timesheetEmailService.sendMail(email);
-        } catch (Exception e) {
-            throw new ServiceException(DATA_NOT_SAVED.getErrorCode(),"timesheet status not saved");
-        }
-        return  modelMapper.map(timesheet1,TimesheetDto.class);
-    }
 
 }
 

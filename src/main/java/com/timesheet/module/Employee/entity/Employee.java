@@ -1,13 +1,14 @@
 package com.timesheet.module.Employee.entity;
 
-import com.timesheet.module.client.entity.Client;
 import com.timesheet.module.team.entity.Team;
+import com.timesheet.module.timesheet.entity.TimesheetLogs;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.List;
 
 
 @Entity
@@ -32,9 +33,7 @@ public class Employee {
     @JoinColumn(name = "team_id", referencedColumnName = "team_id")
     public Team team;
 
-    @ManyToOne(fetch = FetchType.EAGER,targetEntity = Employee.class)
-    @JoinColumn(name = "task_id", referencedColumnName = "task_id")
-    public Employee employee;
-
+    @OneToMany(targetEntity = TimesheetLogs.class, mappedBy = "employee", fetch = FetchType. LAZY)
+    public List<TimesheetLogs> timesheetLogsList;
 
 }

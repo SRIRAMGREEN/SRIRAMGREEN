@@ -13,7 +13,6 @@ public interface EmployeeRepo extends JpaRepository<Employee, Integer> {
 
     Optional<List<Employee>> findByEmployeeAddedByAdminTrue();
 
-
     @Query(value ="SELECT * FROM employee Where team_id =?;", nativeQuery = true )
     Optional<List<Employee>> findByTeamId(int teamId);
 

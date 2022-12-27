@@ -20,5 +20,6 @@ public class ServiceException extends RuntimeException {
     private String errorDesc;
 
     public ServiceException(String errorCode) {
+
     }
 }

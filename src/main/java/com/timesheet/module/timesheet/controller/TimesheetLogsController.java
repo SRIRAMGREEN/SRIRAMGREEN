@@ -34,9 +34,8 @@ public class TimesheetLogsController {
     }
 
     @DeleteMapping(value = "/deleteTimesheetLogs")
-    public String deleteTimesheetLogs(@RequestParam int logsId) {
+    public void deleteTimesheetLogs(@RequestParam int logsId) {
         logger.info("TimesheetLogsController || deleteTimesheetLogs || delete TimesheetLog details");
         timesheetLogsService.deleteTimesheetLogs(logsId);
-        return "TimesheetLogs Deleted successfully";
     }
 }

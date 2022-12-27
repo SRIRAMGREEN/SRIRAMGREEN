@@ -23,4 +23,5 @@ public interface EmployeeService {
 
     void addEntryToEmployee(Registration registration);
 
+    List<EmployeeDto> getAllEmployeeDetails();
 }
