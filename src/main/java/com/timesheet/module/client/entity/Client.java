@@ -2,6 +2,7 @@ package com.timesheet.module.client.entity;
 
 import com.timesheet.module.project.entity.Project;
 import com.timesheet.module.projectmanager.entity.ProjectManager;
+import com.timesheet.module.timesheet.entity.TimesheetLogs;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

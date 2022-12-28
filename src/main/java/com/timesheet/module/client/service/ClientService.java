@@ -18,9 +18,9 @@ public interface ClientService {
 
     ClientDto updateClientDetails(Client client);
 
-    void deleteClient(int clientId);
+    String deleteClient(int clientId);
 
 
-    @Transactional
-    String insertImage(Optional<MultipartFile> image, int clientId);
+
+    ClientDto insertImage(Optional<MultipartFile> image, int clientId);
 }

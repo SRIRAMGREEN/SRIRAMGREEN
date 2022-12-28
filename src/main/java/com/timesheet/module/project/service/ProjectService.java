@@ -18,8 +18,8 @@ public interface ProjectService {
     List<ProjectDto> getAllProjectDetails();
     ProjectDto updateProject(Project project);
 
-    void deleteProject(int projectId);
+    String deleteProject(int projectId);
 
-    String insertImage(Optional<MultipartFile> image, int projectId);
+    ProjectDto insertImage(Optional<MultipartFile> image, int projectId);
 
 }

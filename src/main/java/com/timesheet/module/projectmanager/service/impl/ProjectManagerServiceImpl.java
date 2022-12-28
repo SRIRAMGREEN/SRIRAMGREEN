@@ -46,7 +46,7 @@ public class ProjectManagerServiceImpl implements ProjectManagerService {
         } catch (NullPointerException e) {
             throw new ServiceException(INVALID_REQUEST.getErrorCode(), "Invalid request");
         } catch (Exception e) {
-            throw new ServiceException(DATA_NOT_SAVED.getErrorCode(), DATA_NOT_SAVED.getErrorDesc());
+            throw new ServiceException(DATA_NOT_SAVED.getErrorCode(), "Invalid data");
         }
 
     }
@@ -64,9 +64,9 @@ public class ProjectManagerServiceImpl implements ProjectManagerService {
                 throw new NullPointerException();
             }
         } catch (NullPointerException e) {
-            throw new ServiceException(INVALID_PROJECT_MANAGER_ID.getErrorCode(), INVALID_PROJECT_MANAGER_ID.getErrorDesc());
+            throw new ServiceException(DATA_NOT_FOUND.getErrorCode(), "Invalid request/Id not found");
         } catch (Exception e) {
-            throw new ServiceException(DATA_NOT_FOUND.getErrorCode(), DATA_NOT_FOUND.getErrorDesc());
+            throw new ServiceException(INVALID_REQUEST.getErrorCode(), "Invalid data");
         }
     }
 
@@ -87,11 +87,11 @@ public class ProjectManagerServiceImpl implements ProjectManagerService {
                 throw new ServiceException(DATA_NOT_FOUND.getErrorCode());
             }
         } catch (NullPointerException e) {
-            throw new ServiceException(INVALID_REQUEST.getErrorCode(), INVALID_REQUEST.getErrorDesc());
+            throw new ServiceException(INVALID_REQUEST.getErrorCode(), "Invalid request");
         } catch (ServiceException e) {
-            throw new ServiceException(DATA_NOT_FOUND.getErrorCode(), DATA_NOT_FOUND.getErrorDesc());
+            throw new ServiceException(DATA_NOT_FOUND.getErrorCode(), "No data");
         } catch (Exception e) {
-            throw new ServiceException(EXPECTATION_FAILED.getErrorCode(), EXPECTATION_FAILED.getErrorDesc());
+            throw new ServiceException(EXPECTATION_FAILED.getErrorCode(), "data not retrieved");
         }
     }
 
@@ -108,30 +108,31 @@ public class ProjectManagerServiceImpl implements ProjectManagerService {
                 BeanUtils.copyProperties(projectManager2, projectManagerDto, NullPropertyName.getNullPropertyNames(projectManager2));
                 return projectManagerDto;
             } else {
-                throw new ServiceException(DATA_NOT_FOUND.getErrorCode(), DATA_NOT_FOUND.getErrorDesc());
+                throw new ServiceException(DATA_NOT_FOUND.getErrorCode(), "Invalid ID or values");
             }
         } catch (NullPointerException e) {
-            throw new ServiceException(UPDATE_FAILED.getErrorCode(), UPDATE_FAILED.getErrorDesc());
+            throw new ServiceException(INVALID_REQUEST.getErrorCode(), "Invalid data");
         } catch (Exception e) {
-            throw new ServiceException(DATA_NOT_SAVED.getErrorCode(), DATA_NOT_SAVED.getErrorDesc());
+            throw new ServiceException(DATA_NOT_SAVED.getErrorCode(), "Data not saved");
         }
     }
 
     @Override
-    public void deleteProjectManager(int projectManagerId) {
+    public String deleteProjectManager(int projectManagerId) {
         try {
             Optional<ProjectManager> projectManager = projectManagerRepo.findById(projectManagerId);
             if (projectManager.isPresent()) {
                 logger.info("ProjectManagerServiceImpl || deleteData || Deleting the ProjectManager id: {}", projectManagerId);
                 projectManagerRepo.deleteById(projectManagerId);
             } else {
-                throw new ServiceException(INVALID_PROJECT_MANAGER_ID.getErrorCode(), INVALID_PROJECT_MANAGER_ID.getErrorDesc());
+                throw new ServiceException(DATA_NOT_FOUND.getErrorCode(), "Data not found against the id");
             }
         } catch (NullPointerException e) {
-            throw new ServiceException(INVALID_PROJECT_MANAGER_ID.getErrorCode(), INVALID_PROJECT_MANAGER_ID.getErrorDesc());
+            throw new ServiceException(INVALID_REQUEST.getErrorCode(), "Invalid request");
         } catch (Exception e) {
-            throw new ServiceException(DATA_NOT_FOUND.getErrorCode(), DATA_NOT_FOUND.getErrorDesc());
+            throw new ServiceException(DATA_NOT_SAVED.getErrorCode(), "Invalid data");
         }
+        return "ProjectManager Details Deleted Successfully";
     }
 
     @Override

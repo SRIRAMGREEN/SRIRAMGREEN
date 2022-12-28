@@ -1,6 +1,7 @@
 package com.timesheet.module.task.entity;
 
 import com.timesheet.module.Employee.entity.Employee;
+import com.timesheet.module.client.entity.Client;
 import com.timesheet.module.project.entity.Project;
 import com.timesheet.module.projectmanager.entity.ProjectManager;
 import com.timesheet.module.timesheet.entity.Timesheet;
@@ -47,8 +48,12 @@ public class Task {
     @Column(name = "taskStatus")
     public String status;
 
-    @OneToOne(fetch = FetchType.EAGER,cascade = CascadeType.DETACH)
-    @JoinColumn(name = "employee_id",referencedColumnName = "employee_id")
+//    @OneToOne(fetch = FetchType.EAGER,cascade = CascadeType.DETACH)
+//    @JoinColumn(name = "employee_id",referencedColumnName = "employee_id")
+//    public Employee employee;
+
+    @ManyToOne(fetch = FetchType.EAGER,targetEntity = Employee.class)
+    @JoinColumn(name = "employee_id", referencedColumnName = "employee_id")
     public Employee employee;
 
     @OneToOne(cascade = CascadeType.DETACH, fetch = FetchType.LAZY)

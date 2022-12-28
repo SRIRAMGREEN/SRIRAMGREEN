@@ -8,13 +8,18 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping(value = "/Client")
+
 public class ClientController {
 
     @Autowired
@@ -22,11 +27,10 @@ public class ClientController {
 
     Logger logger = LoggerFactory.getLogger(ClientController.class);
 
-
     @PostMapping(value = "/insertClient")
-    public ResponseEntity<ClientDto> insertClient(@RequestBody Client clientEntity) {
+    public ResponseEntity<ClientDto> insertClient(@RequestBody Client client) {
         logger.info("ClientEntity || insertClient || Inserting the Client Details from the ClientEntity");
-        return new ResponseEntity<>(clientService.addClient(clientEntity), HttpStatus.OK);
+        return new ResponseEntity<>(clientService.addClient(client), HttpStatus.OK);
     }
     @GetMapping(value = "/getClientDetails")
     public ResponseEntity<ClientDto> getClient(@RequestParam int clientId) {
@@ -51,4 +55,13 @@ public class ClientController {
         clientService.deleteClient(clientId);
         return "Client Details Deleted Successfully";
     }
+
+    @PutMapping(value = "/insertImage", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
+    public ResponseEntity<ClientDto> insertImage(@RequestParam("image") Optional<MultipartFile> image, @RequestParam("id") int clientId) throws IOException {
+        logger.info("ProjectController || insertImage || Inserting Images");
+        return  new ResponseEntity<>(clientService.insertImage(image, clientId),HttpStatus.OK);
+
+
+    }
+
 }

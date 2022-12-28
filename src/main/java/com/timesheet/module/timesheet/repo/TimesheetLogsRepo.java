@@ -11,4 +11,6 @@ import java.util.Optional;
 public interface TimesheetLogsRepo extends JpaRepository<TimesheetLogs,Integer > {
 
     Optional<List<TimesheetLogs>> findTimesheetLogsByTimesheetId(int timesheet_id);
+
+
 }

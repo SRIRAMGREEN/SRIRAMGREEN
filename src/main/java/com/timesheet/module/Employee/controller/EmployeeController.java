@@ -50,8 +50,9 @@ public class EmployeeController {
     }
 
     @DeleteMapping(value = "/deleteEmployee")
-    public void deleteClientDetails(@RequestParam int employeeId) {
+    public String deleteClientDetails(@RequestParam int employeeId) {
         logger.info("EmployeeController || deleteEmployee || Deleting the employee Info {} ", employeeId);
         employeeService.deleteUser(employeeId);
+        return "Employee Deleted Successfully";
     }
 }

@@ -4,7 +4,7 @@ server:
 #    context-path: /timesheet
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/timesheetproject
+    url: jdbc:postgresql://localhost:5432/Timesheet
     username: postgres
     password: root
     driverClassName: org.postgresql.Driver

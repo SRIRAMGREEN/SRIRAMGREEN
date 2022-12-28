@@ -1,10 +1,10 @@
 package com.timesheet.module.timesheet.dto;
 
-
 import lombok.Getter;
 import lombok.Setter;
 
-import java.time.LocalDateTime;
+
+import java.util.Date;
 
 @Getter
 @Setter
@@ -12,9 +12,8 @@ public class TimesheetLogsDto {
 
     private int id;
 
-    private LocalDateTime date;
+    private String date;
 
     private Long hours;
 
-    private TimesheetDto timesheetDto;
 }

@@ -51,15 +51,10 @@ public class ProjectController {
     }
 
     @DeleteMapping(value = "/deleteProjectData")
-    public void deleteProject(@RequestParam int projectId) {
+    public String deleteProject(@RequestParam int projectId) {
         logger.info("ProjectController || deleteProjectDetails || Deleting the ProjectDetails {} // ->", projectId);
         projectService.deleteProject(projectId);
-    }
-
-    @GetMapping(value = "/getProjectByProjectManagerId")
-    public ResponseEntity<List<ProjectDto>> getProjectByProjectManagerId(@RequestParam int id) {
-        logger.info("ProjectController || getProjectDetailsByProjectManagerId || getting the ProjectDetails by ProjectManagerId {} ->", id);
-        return new ResponseEntity<>(projectService.getProjectByProjectManagerId(id), HttpStatus.OK);
+        return "Project Details Deleted Successfully";
     }
 
     @GetMapping(value = "/getProjectByProjectManagerId")
@@ -69,11 +64,9 @@ public class ProjectController {
     }
 
     @PutMapping(value = "/insertImage", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
-    public ResponseEntity<String> insertImage(@RequestParam("image") Optional<MultipartFile> image, @RequestParam("id") int projectId) throws IOException {
+    public ResponseEntity<ProjectDto> insertImage(@RequestParam("image") Optional<MultipartFile> image, @RequestParam("id") int projectId) throws IOException {
         logger.info("ProjectController || insertImage || Inserting Images");
-        projectService.insertImage(image, projectId);
-        return new ResponseEntity<>("Image Inserted", HttpStatus.OK);
-
+        return  new ResponseEntity<>(projectService.insertImage(image, projectId), HttpStatus.OK);
     }
 
 }

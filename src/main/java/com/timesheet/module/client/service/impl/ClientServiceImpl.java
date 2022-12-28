@@ -42,9 +42,9 @@ public class ClientServiceImpl implements ClientService {
             modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.LOOSE);
             return modelMapper.map(client, ClientDto.class);
         } catch (NullPointerException e) {
-            throw new ServiceException(INVALID_REQUEST.getErrorCode(), INVALID_REQUEST.getErrorDesc());
+            throw new ServiceException(INVALID_REQUEST.getErrorCode(), "Invalid request");
         } catch (Exception e) {
-            throw new ServiceException(DATA_NOT_SAVED.getErrorCode(), DATA_NOT_SAVED.getErrorDesc());
+            throw new ServiceException(DATA_NOT_SAVED.getErrorCode(), "Invalid data");
         }
     }
 
@@ -61,9 +61,9 @@ public class ClientServiceImpl implements ClientService {
                 throw new NullPointerException();
             }
         } catch (NullPointerException e) {
-            throw new ServiceException(DATA_NOT_FOUND.getErrorCode(), DATA_NOT_FOUND.getErrorDesc());
+            throw new ServiceException(DATA_NOT_FOUND.getErrorCode(), "Invalid request/Id not found");
         } catch (Exception e) {
-            throw new ServiceException(INVALID_REQUEST.getErrorCode(), INVALID_REQUEST.getErrorDesc());
+            throw new ServiceException(INVALID_REQUEST.getErrorCode(), "Invalid data");
         }
     }
 
@@ -84,11 +84,11 @@ public class ClientServiceImpl implements ClientService {
                 throw new ServiceException(DATA_NOT_FOUND.getErrorCode());
             }
         } catch (NullPointerException e) {
-            throw new ServiceException(INVALID_REQUEST.getErrorCode(), INVALID_REQUEST.getErrorDesc());
+            throw new ServiceException(INVALID_REQUEST.getErrorCode(), "Invalid request");
         } catch (ServiceException e) {
-            throw new ServiceException(DATA_NOT_FOUND.getErrorCode(), DATA_NOT_FOUND.getErrorDesc());
+            throw new ServiceException(DATA_NOT_FOUND.getErrorCode(), "No data");
         } catch (Exception e) {
-            throw new ServiceException(EXPECTATION_FAILED.getErrorCode(), EXPECTATION_FAILED.getErrorDesc());
+            throw new ServiceException(EXPECTATION_FAILED.getErrorCode(), "data not retrieved");
         }
     }
 
@@ -104,38 +104,41 @@ public class ClientServiceImpl implements ClientService {
                 BeanUtils.copyProperties(client2, clientDto, NullPropertyName.getNullPropertyNames(client2));
                 return clientDto;
             } else {
-                throw new ServiceException(DATA_NOT_FOUND.getErrorCode(), DATA_NOT_FOUND.getErrorDesc());
+                throw new ServiceException(DATA_NOT_FOUND.getErrorCode(), "Invalid ID or values");
             }
         } catch (NullPointerException e) {
-            throw new ServiceException(INVALID_REQUEST.getErrorCode(), INVALID_REQUEST.getErrorDesc());
+            throw new ServiceException(INVALID_REQUEST.getErrorCode(), "Invalid data");
         } catch (Exception e) {
-            throw new ServiceException(DATA_NOT_SAVED.getErrorCode(), DATA_NOT_SAVED.getErrorDesc());
+            throw new ServiceException(DATA_NOT_SAVED.getErrorCode(), "Data not saved");
         }
     }
 
 
     @Override
-    public void deleteClient(int client_id) {
+    public String deleteClient(int client_id) {
         logger.info("ClientServiceImpl || deleteClient || Client detail was deleted by particular ClientId=={}", client_id);
         try {
             clientRepo.deleteById(client_id);
         } catch (NullPointerException e) {
-            throw new ServiceException(INVALID_REQUEST.getErrorCode(), INVALID_REQUEST.getErrorDesc());
+            throw new ServiceException(INVALID_REQUEST.getErrorCode(), "Invalid request");
         } catch (Exception e) {
-            throw new ServiceException(DATA_NOT_FOUND.getErrorCode(), DATA_NOT_FOUND.getErrorDesc());
+            throw new ServiceException(DATA_NOT_FOUND.getErrorCode(), "Invalid Input");
         }
+        return "Client Deleted Successfully";
     }
 
     @Transactional
     @Override
-    public String insertImage(Optional<MultipartFile> image, int clientId) {
+    public ClientDto insertImage(Optional<MultipartFile> image, int clientId) {
         Optional<Client> client = clientRepo.findById(clientId);
+        ClientDto clientDto;
         if (client.isPresent()) {
             try {
                 Client clients = client.get();
                 if (image.isPresent()) {
                     clients.setImage(image.get().getBytes());
                     clientRepo.save(clients);
+                    clientDto = modelMapper.map(clients, ClientDto.class);
                 } else {
                     throw new NullPointerException();
                 }
@@ -147,6 +150,6 @@ public class ClientServiceImpl implements ClientService {
         } else {
             throw new ServiceException(DATA_NOT_FOUND.getErrorCode(), "Invalid data");
         }
-        return "Client Image Inserted Successfully";
+        return clientDto;
     }
 }

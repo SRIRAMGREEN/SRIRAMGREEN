@@ -14,9 +14,9 @@ import java.nio.charset.StandardCharsets;
 @Service
 public class TimesheetEmailService {
 
-        private final SpringTemplateEngine templateEngine;
+    private final SpringTemplateEngine templateEngine;
 
-        private final JavaMailSender emailSender;
+    private final JavaMailSender emailSender;
 
     public TimesheetEmailService(SpringTemplateEngine templateEngine, JavaMailSender emailSender) {
         this.templateEngine = templateEngine;
@@ -24,19 +24,31 @@ public class TimesheetEmailService {
     }
 
     public void sendMail(TimesheetAbstractEmailContext email) throws MessagingException {
-            MimeMessage message = emailSender.createMimeMessage();
-            MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(message,
-                    MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED,
-                    StandardCharsets.UTF_8.name());
-            Context context = new Context();
-            context.setVariables(email.getContext());
-            String emailContent = templateEngine.process(email.getTemplateLocation(), context);
+        MimeMessage message = emailSender.createMimeMessage();
+        MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(message,
+                MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED,
+                StandardCharsets.UTF_8.name());
+        Context context = new Context();
+        context.setVariables(email.getContext());
+        String emailContent = templateEngine.process(email.getTemplateLocation(), context);
+        mimeMessageHelper.setTo(email.getTo());
+        mimeMessageHelper.setSubject(email.getSubject());
+        mimeMessageHelper.setFrom(email.getFrom());
+        mimeMessageHelper.setText(emailContent, true);
+        emailSender.send(message);
+    }
 
-            mimeMessageHelper.setTo(email.getTo());
-            mimeMessageHelper.setSubject(email.getSubject());
-            mimeMessageHelper.setFrom(email.getFrom());
-            mimeMessageHelper.setText(emailContent, true);
-            emailSender.send(message);
-        }
-
+    public void sendMailStatus(TimesheetAbstractEmailContext email) throws MessagingException {
+        MimeMessage message = emailSender.createMimeMessage();
+        MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(message,
+                MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED,
+                StandardCharsets.UTF_8.name());
+        Context context = new Context();
+        context.setVariables(email.getContext());
+        mimeMessageHelper.setTo(email.getTo());
+        mimeMessageHelper.setSubject(email.getSubject());
+        mimeMessageHelper.setFrom(email.getFrom());
+        mimeMessageHelper.setText("TimesheetStatus Update");
+        emailSender.send(message);
+    }
 }

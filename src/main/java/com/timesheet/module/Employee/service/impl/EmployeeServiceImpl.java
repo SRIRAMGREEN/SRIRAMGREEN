@@ -56,6 +56,31 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
+    public List<EmployeeDto> getAllEmployeeDetails() {
+        logger.info("ProjectServiceImpl || getAllProjectDetails || Get all project manager from the ProjectDetails");
+        try {
+            Optional<List<Employee>> employee = Optional.of(employeeRepo.findAll());
+            List<EmployeeDto> employeeDtoList = new ArrayList<>();
+            if (!employee.get().isEmpty()) {
+                for (Employee employee1 : employee.get()) {
+                    modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.LOOSE);
+                    EmployeeDto employeeDto = modelMapper.map(employee1, EmployeeDto.class);
+                    employeeDtoList.add(employeeDto);
+                }
+                return employeeDtoList;
+            } else {
+                throw new ServiceException(DATA_NOT_FOUND.getErrorCode());
+            }
+        } catch (NullPointerException e) {
+            throw new ServiceException(INVALID_REQUEST.getErrorCode(), "Invalid request");
+        } catch (ServiceException e) {
+            throw new ServiceException(DATA_NOT_FOUND.getErrorCode(), "No data");
+        } catch (Exception e) {
+            throw new ServiceException(EXPECTATION_FAILED.getErrorCode(), "data not retrieved");
+        }
+    }
+
+    @Override
     public EmployeeDto getEmployeeData(int id) {
         try {
             Optional<Employee> employee = employeeRepo.findById(id);

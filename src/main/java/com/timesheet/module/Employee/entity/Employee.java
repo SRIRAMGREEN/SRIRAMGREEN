@@ -1,7 +1,8 @@
 package com.timesheet.module.Employee.entity;
 
+import com.timesheet.module.project.entity.Project;
+import com.timesheet.module.task.entity.Task;
 import com.timesheet.module.team.entity.Team;
-import com.timesheet.module.timesheet.entity.TimesheetLogs;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -33,7 +34,8 @@ public class Employee {
     @JoinColumn(name = "team_id", referencedColumnName = "team_id")
     public Team team;
 
-    @OneToMany(targetEntity = TimesheetLogs.class, mappedBy = "employee", fetch = FetchType. LAZY)
-    public List<TimesheetLogs> timesheetLogsList;
+    @OneToMany(targetEntity = Task.class, mappedBy = "employee", fetch = FetchType.EAGER)
+    public List<Task> task;
+
 
 }

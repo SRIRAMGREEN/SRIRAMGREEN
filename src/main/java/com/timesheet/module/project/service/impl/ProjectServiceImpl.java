@@ -12,6 +12,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -40,25 +45,25 @@ public class ProjectServiceImpl implements ProjectService {
     public ProjectDto insertProject(Project project) {
         logger.info("ProjectServiceImpl || insertProject ||Adding the project Details");
         try {
-            Project project1 = projectRepo.save(project);
+//            project.setImage(image.get().getBytes());
+            projectRepo.save(project);
             modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.LOOSE);
-            return modelMapper.map(project1, ProjectDto.class);
+            return modelMapper.map(project, ProjectDto.class);
         } catch (NullPointerException e) {
             throw new ServiceException(INVALID_REQUEST.getErrorCode(), "Invalid request");
         } catch (Exception e) {
-            throw new ServiceException(DATA_NOT_SAVED.getErrorCode(), "Invalid data");
+            throw new ServiceException(DATA_NOT_SAVED.getErrorCode(), "Invalid data's");
         }
     }
 
-    @Transactional
     @Override
-    public List<ProjectDto> getProjectDetailsByClientId(int clientId) {
+    @Transactional
+    public List<ProjectDto> getProjectByProjectManagerId(int id) {
         try {
-            Optional<List<Project>> projects = projectRepo.findProjectByClientId(clientId);
+            Optional<List<Project>> projects = projectRepo.findProjectByProjectManagerId(id);
             List<ProjectDto> projectDtoList = new ArrayList<>();
             if (projects.isPresent()) {
                 for (Project project : projects.get()) {
-                    modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.LOOSE);
                     ProjectDto projectDto = modelMapper.map(project, ProjectDto.class);
                     projectDtoList.add(projectDto);
                 }
@@ -74,6 +79,29 @@ public class ProjectServiceImpl implements ProjectService {
 
     }
 
+    @Transactional
+    @Override
+    public List<ProjectDto> getProjectDetailsByClientId(int clientId) {
+        try {
+            Optional<List<Project>> projects = projectRepo.findProjectByClientId(clientId);
+            List<ProjectDto> projectDtoList = new ArrayList<>();
+            if (projects.isPresent()) {
+                for (Project project : projects.get()) {
+//                    modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.LOOSE);
+                    ProjectDto projectDto = modelMapper.map(project, ProjectDto.class);
+                    projectDtoList.add(projectDto);
+                }
+                return projectDtoList;
+            } else {
+                throw new NullPointerException();
+            }
+        } catch (NullPointerException e) {
+            throw new ServiceException(DATA_NOT_FOUND.getErrorCode(), "Invalid req/Id not found");
+        } catch (Exception e) {
+            throw new ServiceException(INVALID_REQUEST.getErrorCode(), "Invalid req");
+        }
+    }
+
     @Override
     public List<ProjectDto> getAllProjectDetails() {
         logger.info("ProjectServiceImpl || getAllProjectDetails || Get all project manager from the ProjectDetails");
@@ -82,7 +110,7 @@ public class ProjectServiceImpl implements ProjectService {
             List<ProjectDto> projectDtoList = new ArrayList<>();
             if (!project.get().isEmpty()) {
                 for (Project project1 : project.get()) {
-                    modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.LOOSE);
+//                    modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.LOOSE);
                     ProjectDto projectDto = modelMapper.map(project1, ProjectDto.class);
                     projectDtoList.add(projectDto);
                 }
@@ -133,14 +161,18 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Transactional
     @Override
-    public String insertImage(Optional<MultipartFile> image, int projectId) {
+    public ProjectDto insertImage(Optional<MultipartFile> image, int projectId) {
         Optional<Project> project = projectRepo.findById(projectId);
+        ProjectDto projectDto;
         if (project.isPresent()) {
             try {
                 Project projects = project.get();
                 if (image.isPresent()) {
                     projects.setImage(image.get().getBytes());
                     projectRepo.save(projects);
+                    projectDto = modelMapper.map(projects, ProjectDto.class);
+
+
                 } else {
                     throw new NullPointerException();
                 }
@@ -152,8 +184,6 @@ public class ProjectServiceImpl implements ProjectService {
         } else {
             throw new ServiceException(DATA_NOT_FOUND.getErrorCode(), "Invalid data");
         }
-        return "Project Image Inserted Successfully";
+        return projectDto;
     }
-
 }
-

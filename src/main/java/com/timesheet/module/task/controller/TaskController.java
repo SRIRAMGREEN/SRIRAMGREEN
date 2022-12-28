@@ -1,7 +1,7 @@
 package com.timesheet.module.task.controller;
 
-import com.timesheet.module.task.entity.Task;
 import com.timesheet.module.task.dto.TaskDto;
+import com.timesheet.module.task.entity.Task;
 import com.timesheet.module.task.service.TaskService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,6 +27,11 @@ public class TaskController {
         logger.info("TaskController || insertTask || Inserting the task Details from the task");
         return new ResponseEntity<>(taskService.addTask(task), HttpStatus.OK);
     }
+    @GetMapping(value = "/getTaskDetails")
+    public ResponseEntity<TaskDto> getTask(@RequestParam int taskId) {
+        logger.info("TaskEntity || getTask || Getting the Task Details from the TaskEntity");
+        return new ResponseEntity<>(taskService.getTaskDetail(taskId), HttpStatus.OK);
+    }
 
     @GetMapping(value = "/getTaskByProjectId")
     public ResponseEntity<List<TaskDto>> getTaskByProjectId(@RequestParam int projectId) {
@@ -34,12 +39,23 @@ public class TaskController {
         return new ResponseEntity<>(taskService.getTaskByProjectId(projectId), HttpStatus.OK);
     }
 
+    @GetMapping(value = "/getAllTask")
+    public ResponseEntity<List<TaskDto>> getAllTask() {
+        logger.info("TaskController || getAllTask || Getting All task Details");
+        return new ResponseEntity<>(taskService.getAllTasks(), HttpStatus.OK);
+    }
+
     @GetMapping(value = "/getTaskByEmployeeId")
-    public ResponseEntity<TaskDto> getTaskByEmployeeId(@RequestParam int id) {
+    public ResponseEntity<List<TaskDto>> getTaskByEmployeeId(@RequestParam int id) {
         logger.info("TaskController || getTaskByEmployeeId || Getting the task Details from the EmployeeId");
         return new ResponseEntity<>(taskService.getTaskByEmployeeId(id), HttpStatus.OK);
     }
 
+    @GetMapping(value = "/getTaskByProjectManagerId")
+    public ResponseEntity<List<TaskDto>> getTaskByProjectManagerId(@RequestParam int id) {
+        logger.info("TaskController || getTaskByEmployeeId || Getting the task Details from the EmployeeId");
+        return new ResponseEntity<>(taskService.getTaskByProjectManagerId(id), HttpStatus.OK);
+    }
     @PutMapping(value = "/updateTask")
     public ResponseEntity<TaskDto> updateTask(@RequestBody Task task) {
         logger.info("TaskController || updateTask || Updating the task Details from the task");
@@ -52,10 +68,11 @@ public class TaskController {
         taskService.deleteTask(taskId);
         return "Task Data Deleted Successfully";
     }
+
     @PutMapping(value = "/percentageAllocation")
-    public double PercentageAllocation(@RequestParam int taskId,int date,int month, int year, int totalWeekDays) {
+    public double PercentageAllocation(@RequestParam int taskId, int totalWeekDays) {
         logger.info("Task controller || percentageAllocation || Updating the percentageAllocation Details to the Task Entity");
-        return (taskService.PercentageAllocation(taskId,date,month,year,totalWeekDays));
+        return (taskService.PercentageAllocation(taskId, totalWeekDays));
     }
 }
 

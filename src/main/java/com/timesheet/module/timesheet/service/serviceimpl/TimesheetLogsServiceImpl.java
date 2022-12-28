@@ -45,19 +45,19 @@ public class TimesheetLogsServiceImpl implements TimesheetLogsService {
                 return timesheetLogsList;
 
             } else {
-                throw new ServiceException(INVALID_REQUEST.getErrorCode(),INVALID_REQUEST.getErrorDesc());
+                throw new NullPointerException();
             }
         } catch (NullPointerException e) {
-            throw new ServiceException(INVALID_TIMESHEET_ID.getErrorCode(), INVALID_TIMESHEET_ID.getErrorDesc());
+            throw new ServiceException(DATA_NOT_FOUND.getErrorCode(), "Invalid request/Id not found");
         } catch (Exception e) {
-            throw new ServiceException(INVALID_REQUEST.getErrorCode(), INVALID_REQUEST.getErrorDesc());
+            throw new ServiceException(INVALID_REQUEST.getErrorCode(), "Invalid data");
         }
     }
 
     @Override
     public TimesheetLogsDto updateTimesheetLogs(TimesheetLogs timesheetLogs) {
-
         try {
+
             Optional<TimesheetLogs> timesheetLogs1 = timesheetLogsRepo.findById(timesheetLogs.getId());
             if (timesheetLogs1.isPresent()) {
                 logger.info("TimesheetLogsServiceImpl  || updateTimesheetLogs || Data was updated timesheetLogs == {}", timesheetLogs1);
@@ -65,23 +65,24 @@ public class TimesheetLogsServiceImpl implements TimesheetLogsService {
                 TimesheetLogs timesheetLogs2 = timesheetLogsRepo.save(timesheetLogs1.get());
                 return modelMapper.map(timesheetLogs2, TimesheetLogsDto.class);
             } else {
-                throw new ServiceException(INVALID_TIMESHEET_LOGS_ID.getErrorCode(), INVALID_TIMESHEET_LOGS_ID.getErrorDesc());
+                throw new ServiceException(DATA_NOT_FOUND.getErrorCode(), "Invalid ID or values");
             }
         } catch (NullPointerException e) {
-            throw new ServiceException(UPDATE_FAILED.getErrorCode(), UPDATE_FAILED.getErrorDesc() );
+            throw new ServiceException(INVALID_REQUEST.getErrorCode(), "Invalid data");
         } catch (Exception e) {
-            throw new ServiceException(DATA_NOT_SAVED.getErrorCode(), DATA_NOT_SAVED.getErrorDesc());
+            throw new ServiceException(DATA_NOT_SAVED.getErrorCode(), "Data not saved");
         }
     }
 
     @Override
-    public void deleteTimesheetLogs(int id) {
+    public String deleteTimesheetLogs(int id) {
         logger.info("TimesheetLogsServiceImpl || deleteTimesheetLogs || TimesheetLogs detail was deleted by particular timesheetLogs=={}", id);
         try {
             timesheetLogsRepo.deleteById(id);
         } catch (Exception e) {
-            throw new ServiceException(INVALID_TIMESHEET_LOGS_ID.getErrorCode(), INVALID_TIMESHEET_LOGS_ID.getErrorDesc());
+            throw new ServiceException(DATA_NOT_FOUND.getErrorCode(), "Invalid ID");
         }
+        return "TimesheetLogs Deleted Successfully";
     }
 
 }

@@ -1,14 +1,17 @@
 package com.timesheet.module.timesheet.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.timesheet.module.Employee.entity.Employee;
+import com.timesheet.module.projectmanager.entity.ProjectManager;
 import com.timesheet.module.task.entity.Task;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 
 
@@ -25,24 +28,37 @@ public class Timesheet {
     @Column(name = "timesheet_Id", unique = true)
     public int id;
 
+//    @Temporal(TemporalType.TIMESTAMP)
+//    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    public String timesheetStartDate;
+
+//    @Temporal(TemporalType.TIMESTAMP)
+//    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    public String timesheetEndDate;
+
     @Column(name = "totalHours")
     public Long totalHours;
 
-    @Column(name = "project_manager_id")
-    private int managerId;
+    @Column(name = "isTimeLimitExceeded")
+    public boolean isTimeLimitExceeded = false;
 
     @Column(name = "timesheetStatus")
-    public Boolean timesheetStatus = false;
+    public String timesheetStatus;
 
-    @OneToOne(fetch = FetchType.LAZY,cascade = CascadeType.DETACH)
-    @JoinColumn(name = "employee_id",referencedColumnName = "employee_id")
+    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.DETACH)
+    @JoinColumn(name = "employee_id", referencedColumnName = "employee_id")
     private Employee employee;
 
-    @OneToMany(targetEntity = Task.class, mappedBy = "timesheet",fetch = FetchType.EAGER,cascade = CascadeType.ALL)
-    private List<Task> task;
+    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.DETACH)
+    @JoinColumn(name = "task_id", referencedColumnName = "task_id")
+    private Task task;
 
-    @OneToMany(targetEntity = TimesheetLogs.class, mappedBy = "timesheet",fetch = FetchType.LAZY)
+    @OneToMany(targetEntity = TimesheetLogs.class, mappedBy = "timesheet", fetch = FetchType.LAZY)
     private List<TimesheetLogs> timesheetLogsList;
+
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.DETACH)
+    @JoinColumn(name = "project_manager_id",referencedColumnName = "manager_id")
+    public ProjectManager projectManager;
 
 }
 
